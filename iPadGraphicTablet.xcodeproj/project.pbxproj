@@ -1,0 +1,595 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		01DBCE58B67F04878F3F1D19 /* LatencyStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = F06A58B4158A71E5877C4498 /* LatencyStats.swift */; };
+		02C5B16A64ADC22D7F281F87 /* TabletPadApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E73AEA0491886B33EDA6D018 /* TabletPadApp.swift */; };
+		09B584E43ED4C8AC25996AF2 /* KeyboardLayoutResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8151CC55AF959969F7ABBF5B /* KeyboardLayoutResolver.swift */; };
+		0CE12228DD4A6E5F517CBB4B /* TabletInputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D18D4A9F3E755F5BCFC3DA0 /* TabletInputController.swift */; };
+		0E097EBE5D7C84040DD39C10 /* PenSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CCA5C9A28268409B62EA9FC /* PenSample.swift */; };
+		13A1615A55864BD8DEE201FE /* ByteTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 857E9FFCE2B2BA9FF2D292F9 /* ByteTransport.swift */; };
+		1AC332823F1E76C3BCEAE56E /* FDTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2359931F320DB42F0486D4F2 /* FDTransport.swift */; };
+		1B36A6B48F689169B1DA81B3 /* ConnectionSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10F2EF2986E8A9542E14B8DC /* ConnectionSettingsView.swift */; };
+		1FD4EDEFB7A0A450EB6579FD /* Profiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676D57F03F9B23A7085CEC0A /* Profiles.swift */; };
+		2411DA0B1FDA635866993F3C /* ProfileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC2F764F8C73010C70C757A9 /* ProfileStore.swift */; };
+		25FCFA7D9F9FB727A2354ED7 /* RegionSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5F4764544389A7E68FBDD4E /* RegionSelector.swift */; };
+		27A5AA7C7C7BE0425B2E61E9 /* ConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 565F80C91D047936F9009295 /* ConnectionManager.swift */; };
+		2DCBFBE418906C3A13F6C407 /* MappingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F01953291A589DA122BB8707 /* MappingSettingsView.swift */; };
+		2E63E1C14021BE9B44706C16 /* ByteCoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCB04804840BFF389E9FAF5 /* ByteCoding.swift */; };
+		306E717768857E0F05E053B3 /* CoordinateMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A318C48155370A61FF4DD6C1 /* CoordinateMapper.swift */; };
+		32B06785E4C133D648DE14A8 /* Security.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05181EC3B7FFC4CA136036A8 /* Security.swift */; };
+		333E731E7A39605691B9BCCD /* AdvancedSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7D8AB725A62DC2CC17FDE5A /* AdvancedSettingsView.swift */; };
+		336B4A08D060588C56030486 /* SystemActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65BBF4D9977DE6F76E1E38B6 /* SystemActions.swift */; };
+		34B47EF94F0BE680C900509B /* Stabilizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 186B70C0A827F7CE943E1222 /* Stabilizer.swift */; };
+		3AD324E683EF7C1F6E6F74C8 /* ByteTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 857E9FFCE2B2BA9FF2D292F9 /* ByteTransport.swift */; };
+		3CE15FB38B86558315357EE4 /* InputBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0BE7250032CC014E6477391 /* InputBackend.swift */; };
+		427BC03A9541FFA3B6366E86 /* LatencyStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = F06A58B4158A71E5877C4498 /* LatencyStats.swift */; };
+		469BE0CFB11AF4BF7AE59C23 /* SessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A608C9A5B9DB8425A877ADB /* SessionView.swift */; };
+		46CB92BE5D9229B21787A9BF /* Profiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676D57F03F9B23A7085CEC0A /* Profiles.swift */; };
+		47D44B7E2F5D644916806C82 /* TrackpadSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 777297BAD5CCED4CB6F7E73E /* TrackpadSettingsView.swift */; };
+		4A5E9285DE8189A347D26FB5 /* NetworkInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2768299DA30229A5E624D57 /* NetworkInfo.swift */; };
+		4B75FD5CD0BB6745314AC043 /* WebClientServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B76E98B33D0E503FFF8ACB3 /* WebClientServer.swift */; };
+		4BC0419955216D03B8E1B83E /* PeerChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DE2A89E3ACAAAE3A6106F82 /* PeerChannel.swift */; };
+		4BDA52815651FF0CE092477E /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650527499711D9AE7EF319F3 /* Geometry.swift */; };
+		4D9FDD53E56F89DF95C7B4B1 /* ByteCoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCB04804840BFF389E9FAF5 /* ByteCoding.swift */; };
+		4DF95CA8DF923ED451F4B4FE /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D0D7FFE7CF393CF3C295AA /* Messages.swift */; };
+		4E6649A20A0934F5D11552C5 /* PermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F9538F42685997A08CCB3E7 /* PermissionManager.swift */; };
+		4FB5B42A3ABAD20D752D2222 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ABC4BA993A7F7EA5DF0F66C /* AppState.swift */; };
+		57FF65FE38D9631A13855A27 /* ButtonsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25559564BBD4ED5A53BF3A0F /* ButtonsSettingsView.swift */; };
+		5A7D6F62238F5D07FA109906 /* CapabilityDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5620B0E1ACC9B43678AB49CD /* CapabilityDetector.swift */; };
+		6092423ABB0C5029E74BC1D7 /* Calibration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F29D6F62ED9AF269A92991 /* Calibration.swift */; };
+		63B01C623648CEE4436E23DA /* LatencyStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = F06A58B4158A71E5877C4498 /* LatencyStats.swift */; };
+		6DABDED8316129AF9AF9E60A /* TabletEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BC495C95568150D1E632EA8 /* TabletEngine.swift */; };
+		6FFAF819C4486B60C566196E /* PenSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CCA5C9A28268409B62EA9FC /* PenSample.swift */; };
+		792F9A1449D00E320F34298E /* ProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B748377F835FAF73DB771758 /* ProtocolTests.swift */; };
+		7E362B22A233178B7659A30B /* PadConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 147D16F4E7B459F84D9E099D /* PadConnectionManager.swift */; };
+		802B37ECA8280FC83720327C /* TabletMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A195FCF7656758D0158E7AA /* TabletMacApp.swift */; };
+		850B52D335A34275EE817661 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4BC43767BF065B33059D151 /* Assets.xcassets */; };
+		875A1A2550C969998B82FFF8 /* DisplayModeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8479F67E58017EE03488F44 /* DisplayModeCard.swift */; };
+		8866F8C3EE7CF3B2D9DF5500 /* PressureCurve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258983F050FF721C9EB0AE64 /* PressureCurve.swift */; };
+		88B2CA1DABC5070F7DEC96DE /* ScreenMirror.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA2B85B4930CFE268B10A96 /* ScreenMirror.swift */; };
+		8AE841894C40F5E210462178 /* PenSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CCA5C9A28268409B62EA9FC /* PenSample.swift */; };
+		8DAFCD326EA8E28F1A379AA1 /* TestDiagnosticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE45C79809DF1D029B59B31B /* TestDiagnosticsView.swift */; };
+		8E0B0B391C8A8831191A493C /* CGEventTabletBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F451F32D82110DE07C59FEE /* CGEventTabletBackend.swift */; };
+		9109244E4100DAE46A438CF0 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC25C4EF01714494BBA58BF5 /* DashboardView.swift */; };
+		918E6B7934A909691A3E92EA /* PressureCurve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258983F050FF721C9EB0AE64 /* PressureCurve.swift */; };
+		9341F9089206764F9BF122B5 /* PencilSurfaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CDEFEE0F9A6FCC08B83283 /* PencilSurfaceView.swift */; };
+		93E99514E84F1625321AE4B3 /* TabletLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA4C895F1D56CD0DD3AE368F /* TabletLog.swift */; };
+		975970DDC4D5D427242EFD5C /* PenSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA958B651EB0B03AFEE5EE5 /* PenSettingsView.swift */; };
+		9B97EDD7E3BBD60DB03B7A55 /* PressureCurve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 258983F050FF721C9EB0AE64 /* PressureCurve.swift */; };
+		A29BA3FA796F74BE33182AC1 /* Security.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05181EC3B7FFC4CA136036A8 /* Security.swift */; };
+		A95DF2B9424E47B23E305C42 /* Profiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676D57F03F9B23A7085CEC0A /* Profiles.swift */; };
+		A96C0172504CE719113C8A20 /* MirrorFeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73559E8B5DFFD101BE29186C /* MirrorFeed.swift */; };
+		ACD2BEB1EB13908F1B648A75 /* PeerChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DE2A89E3ACAAAE3A6106F82 /* PeerChannel.swift */; };
+		B030B3CF726558CB0A37F0C4 /* ShortcutRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 615EEC4A13E09EE0A9904231 /* ShortcutRecorder.swift */; };
+		B70B24FFFC521D47C6468D89 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9B2C0EEF9462B68C3ADF534E /* Assets.xcassets */; };
+		BBF40B655BDD2A7BC3654A1B /* apple-touch-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 9224C43CE24E340C500C6A07 /* apple-touch-icon.png */; };
+		C2433629D320CFF56AFAE42E /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D0D7FFE7CF393CF3C295AA /* Messages.swift */; };
+		C4CFB28CDBBEE6C92D9A13CA /* MenuBarContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13BFE961421CBF50F58C579 /* MenuBarContent.swift */; };
+		CC97EC3063A5760DD21019E8 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650527499711D9AE7EF319F3 /* Geometry.swift */; };
+		CD1AB0744500E0EC10EBC77A /* Stabilizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 186B70C0A827F7CE943E1222 /* Stabilizer.swift */; };
+		D2777CCB030CEA489AABDCB0 /* WebClient.html in Resources */ = {isa = PBXBuildFile; fileRef = F0CAA984260B68C05E536F3B /* WebClient.html */; };
+		D6C72D2064E5ECF68301690A /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F6DD723981A44FB99C9AE31 /* Theme.swift */; };
+		E29A44FB31B48FC680167835 /* TabletLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA4C895F1D56CD0DD3AE368F /* TabletLog.swift */; };
+		E5447337E495012BEC8AB897 /* ConnectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9218E2AE8C19F2ADCFF303E2 /* ConnectView.swift */; };
+		E732E16815777CF0A063BE54 /* PadTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A741208A53D9C3807D03946 /* PadTheme.swift */; };
+		E74B27B7613544A01AE8F6BA /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D0D7FFE7CF393CF3C295AA /* Messages.swift */; };
+		EAB7668AE13215B91637D618 /* Geometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650527499711D9AE7EF319F3 /* Geometry.swift */; };
+		F15912AB0AEC412498081B47 /* WiFiServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CF5FBED605E6CE252B9839D /* WiFiServer.swift */; };
+		F31016BA86164786F3FF6558 /* CalibrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8010920B45A39201D8E398E6 /* CalibrationView.swift */; };
+		F3D3659F0E442090E08CC184 /* ByteCoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BCB04804840BFF389E9FAF5 /* ByteCoding.swift */; };
+		F3DEF6F1FF469F329608BBE6 /* OverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6F517338775F70F083C1D6 /* OverviewView.swift */; };
+		F636535083491A7A07EF9032 /* Stabilizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 186B70C0A827F7CE943E1222 /* Stabilizer.swift */; };
+		FE16B20DB12380E7348CCCD9 /* DisplayManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D2EC481666F00A3701B7CA /* DisplayManager.swift */; };
+		FF782D43270A035F092A6839 /* USBMuxClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562DFB573C7406F4BD934B8C /* USBMuxClient.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		05181EC3B7FFC4CA136036A8 /* Security.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Security.swift"; sourceTree = "<group>"; };
+		0A195FCF7656758D0158E7AA /* TabletMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TabletMacApp.swift"; sourceTree = "<group>"; };
+		10F2EF2986E8A9542E14B8DC /* ConnectionSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConnectionSettingsView.swift"; sourceTree = "<group>"; };
+		147D16F4E7B459F84D9E099D /* PadConnectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PadConnectionManager.swift"; sourceTree = "<group>"; };
+		186B70C0A827F7CE943E1222 /* Stabilizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stabilizer.swift"; sourceTree = "<group>"; };
+		1F451F32D82110DE07C59FEE /* CGEventTabletBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGEventTabletBackend.swift"; sourceTree = "<group>"; };
+		2359931F320DB42F0486D4F2 /* FDTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FDTransport.swift"; sourceTree = "<group>"; };
+		25559564BBD4ED5A53BF3A0F /* ButtonsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ButtonsSettingsView.swift"; sourceTree = "<group>"; };
+		258983F050FF721C9EB0AE64 /* PressureCurve.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PressureCurve.swift"; sourceTree = "<group>"; };
+		2BF01D2B777BA642C1C68F79 /* TEST.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "TEST.md"; sourceTree = "<group>"; };
+		2F6DD723981A44FB99C9AE31 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Theme.swift"; sourceTree = "<group>"; };
+		319D72BA10288AFFA17F74ED /* project.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = "project.yml"; sourceTree = "<group>"; };
+		3ABC4BA993A7F7EA5DF0F66C /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppState.swift"; sourceTree = "<group>"; };
+		3CCA5C9A28268409B62EA9FC /* PenSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PenSample.swift"; sourceTree = "<group>"; };
+		3D18D4A9F3E755F5BCFC3DA0 /* TabletInputController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TabletInputController.swift"; sourceTree = "<group>"; };
+		44B6C995BE2691863568287E /* TabletCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "TabletCoreTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4A608C9A5B9DB8425A877ADB /* SessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SessionView.swift"; sourceTree = "<group>"; };
+		4C6F517338775F70F083C1D6 /* OverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OverviewView.swift"; sourceTree = "<group>"; };
+		4CA2B85B4930CFE268B10A96 /* ScreenMirror.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ScreenMirror.swift"; sourceTree = "<group>"; };
+		4DE2A89E3ACAAAE3A6106F82 /* PeerChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PeerChannel.swift"; sourceTree = "<group>"; };
+		5620B0E1ACC9B43678AB49CD /* CapabilityDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CapabilityDetector.swift"; sourceTree = "<group>"; };
+		562DFB573C7406F4BD934B8C /* USBMuxClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "USBMuxClient.swift"; sourceTree = "<group>"; };
+		565F80C91D047936F9009295 /* ConnectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConnectionManager.swift"; sourceTree = "<group>"; };
+		5EB64660FA3B7BF275B80FFA /* Graphic Tablet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Graphic Tablet.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5F9538F42685997A08CCB3E7 /* PermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PermissionManager.swift"; sourceTree = "<group>"; };
+		615EEC4A13E09EE0A9904231 /* ShortcutRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ShortcutRecorder.swift"; sourceTree = "<group>"; };
+		6284FC865C7ECDD739189F22 /* PROTOCOLLO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "PROTOCOLLO.md"; sourceTree = "<group>"; };
+		650527499711D9AE7EF319F3 /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Geometry.swift"; sourceTree = "<group>"; };
+		65BBF4D9977DE6F76E1E38B6 /* SystemActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SystemActions.swift"; sourceTree = "<group>"; };
+		676D57F03F9B23A7085CEC0A /* Profiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Profiles.swift"; sourceTree = "<group>"; };
+		6A741208A53D9C3807D03946 /* PadTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PadTheme.swift"; sourceTree = "<group>"; };
+		718DE2FF874FE3504DFBB2D9 /* ARCHITETTURA.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "ARCHITETTURA.md"; sourceTree = "<group>"; };
+		73559E8B5DFFD101BE29186C /* MirrorFeed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MirrorFeed.swift"; sourceTree = "<group>"; };
+		765E49B895378FE656B26086 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info.plist"; sourceTree = "<group>"; };
+		777297BAD5CCED4CB6F7E73E /* TrackpadSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TrackpadSettingsView.swift"; sourceTree = "<group>"; };
+		7ADC618111B5F38570A62E7B /* TabletMac.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "TabletMac.entitlements"; sourceTree = "<group>"; };
+		7B76E98B33D0E503FFF8ACB3 /* WebClientServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WebClientServer.swift"; sourceTree = "<group>"; };
+		8010920B45A39201D8E398E6 /* CalibrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CalibrationView.swift"; sourceTree = "<group>"; };
+		8151CC55AF959969F7ABBF5B /* KeyboardLayoutResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeyboardLayoutResolver.swift"; sourceTree = "<group>"; };
+		857E9FFCE2B2BA9FF2D292F9 /* ByteTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ByteTransport.swift"; sourceTree = "<group>"; };
+		8BCB04804840BFF389E9FAF5 /* ByteCoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ByteCoding.swift"; sourceTree = "<group>"; };
+		8CF5FBED605E6CE252B9839D /* WiFiServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WiFiServer.swift"; sourceTree = "<group>"; };
+		9218E2AE8C19F2ADCFF303E2 /* ConnectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConnectView.swift"; sourceTree = "<group>"; };
+		9224C43CE24E340C500C6A07 /* apple-touch-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "apple-touch-icon.png"; sourceTree = "<group>"; };
+		9B2C0EEF9462B68C3ADF534E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Assets.xcassets"; sourceTree = "<group>"; };
+		9BC495C95568150D1E632EA8 /* TabletEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TabletEngine.swift"; sourceTree = "<group>"; };
+		A0BE7250032CC014E6477391 /* InputBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "InputBackend.swift"; sourceTree = "<group>"; };
+		A318C48155370A61FF4DD6C1 /* CoordinateMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CoordinateMapper.swift"; sourceTree = "<group>"; };
+		A7CDEFEE0F9A6FCC08B83283 /* PencilSurfaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PencilSurfaceView.swift"; sourceTree = "<group>"; };
+		A7D8AB725A62DC2CC17FDE5A /* AdvancedSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AdvancedSettingsView.swift"; sourceTree = "<group>"; };
+		A9F29D6F62ED9AF269A92991 /* Calibration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Calibration.swift"; sourceTree = "<group>"; };
+		AA4C895F1D56CD0DD3AE368F /* TabletLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TabletLog.swift"; sourceTree = "<group>"; };
+		B4D0D7FFE7CF393CF3C295AA /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Messages.swift"; sourceTree = "<group>"; };
+		B5F4764544389A7E68FBDD4E /* RegionSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RegionSelector.swift"; sourceTree = "<group>"; };
+		B748377F835FAF73DB771758 /* ProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProtocolTests.swift"; sourceTree = "<group>"; };
+		BC25C4EF01714494BBA58BF5 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DashboardView.swift"; sourceTree = "<group>"; };
+		BCC31FEBA987766DFBE31D24 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "README.md"; sourceTree = "<group>"; };
+		C13BFE961421CBF50F58C579 /* MenuBarContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MenuBarContent.swift"; sourceTree = "<group>"; };
+		C5D2EC481666F00A3701B7CA /* DisplayManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DisplayManager.swift"; sourceTree = "<group>"; };
+		C8479F67E58017EE03488F44 /* DisplayModeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DisplayModeCard.swift"; sourceTree = "<group>"; };
+		CD8E277FF5210D2448F26777 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info.plist"; sourceTree = "<group>"; };
+		CE892ED33C791DCE8F3D61EB /* iPad Graphic Tablet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iPad Graphic Tablet.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D4BC43767BF065B33059D151 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Assets.xcassets"; sourceTree = "<group>"; };
+		DEA958B651EB0B03AFEE5EE5 /* PenSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PenSettingsView.swift"; sourceTree = "<group>"; };
+		E2768299DA30229A5E624D57 /* NetworkInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NetworkInfo.swift"; sourceTree = "<group>"; };
+		E73AEA0491886B33EDA6D018 /* TabletPadApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TabletPadApp.swift"; sourceTree = "<group>"; };
+		E9817FDD3DC7D3434B7E8447 /* FATTIBILITA.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "FATTIBILITA.md"; sourceTree = "<group>"; };
+		EC2F764F8C73010C70C757A9 /* ProfileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProfileStore.swift"; sourceTree = "<group>"; };
+		F01953291A589DA122BB8707 /* MappingSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MappingSettingsView.swift"; sourceTree = "<group>"; };
+		F06A58B4158A71E5877C4498 /* LatencyStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LatencyStats.swift"; sourceTree = "<group>"; };
+		F0CAA984260B68C05E536F3B /* WebClient.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "WebClient.html"; sourceTree = "<group>"; };
+		FE45C79809DF1D029B59B31B /* TestDiagnosticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TestDiagnosticsView.swift"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		178023B67604D5E3E0A6924C /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = ( ); runOnlyForDeploymentPostprocessing = 0; };
+		1859E37ED125AE8AADBE4393 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = ( ); runOnlyForDeploymentPostprocessing = 0; };
+		9DDBA620129E0F9525FE9021 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = ( ); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		050871B1EBACE81FB87B7E93 /* Connection */ = {isa = PBXGroup; children = (
+				565F80C91D047936F9009295,
+				2359931F320DB42F0486D4F2,
+				E2768299DA30229A5E624D57,
+				562DFB573C7406F4BD934B8C,
+				7B76E98B33D0E503FFF8ACB3,
+				8CF5FBED605E6CE252B9839D,
+			); path = "Connection"; sourceTree = "<group>"; };
+		05FCE267EC4BF3351AADABBD /* Input */ = {isa = PBXGroup; children = (
+				1F451F32D82110DE07C59FEE,
+				C5D2EC481666F00A3701B7CA,
+				A0BE7250032CC014E6477391,
+				8151CC55AF959969F7ABBF5B,
+				5F9538F42685997A08CCB3E7,
+				65BBF4D9977DE6F76E1E38B6,
+			); path = "Input"; sourceTree = "<group>"; };
+		0D453A417EA215812FA15AEB /* UI */ = {isa = PBXGroup; children = (
+				A7D8AB725A62DC2CC17FDE5A,
+				25559564BBD4ED5A53BF3A0F,
+				10F2EF2986E8A9542E14B8DC,
+				BC25C4EF01714494BBA58BF5,
+				C8479F67E58017EE03488F44,
+				F01953291A589DA122BB8707,
+				C13BFE961421CBF50F58C579,
+				4C6F517338775F70F083C1D6,
+				DEA958B651EB0B03AFEE5EE5,
+				615EEC4A13E09EE0A9904231,
+				FE45C79809DF1D029B59B31B,
+				2F6DD723981A44FB99C9AE31,
+				777297BAD5CCED4CB6F7E73E,
+			); path = "UI"; sourceTree = "<group>"; };
+		170A1BB09591AC50593B64EE /* Sources */ = {isa = PBXGroup; children = (
+				296F13A2412A84E9D5E796EA,
+				8F1960CCBF4B3BF762FA78CB,
+			); path = "Sources"; sourceTree = "<group>"; };
+		296F13A2412A84E9D5E796EA /* TabletCore */ = {isa = PBXGroup; children = (
+				8BCB04804840BFF389E9FAF5,
+				650527499711D9AE7EF319F3,
+				F06A58B4158A71E5877C4498,
+				B4D0D7FFE7CF393CF3C295AA,
+				3CCA5C9A28268409B62EA9FC,
+				258983F050FF721C9EB0AE64,
+				676D57F03F9B23A7085CEC0A,
+				186B70C0A827F7CE943E1222,
+			); path = "TabletCore"; sourceTree = "<group>"; };
+		33F1314BF4952AAF7EA8ED2B /* App */ = {isa = PBXGroup; children = (
+				E73AEA0491886B33EDA6D018,
+			); path = "App"; sourceTree = "<group>"; };
+		3568985069F71AF7EEA8BA5E /* UI */ = {isa = PBXGroup; children = (
+				8010920B45A39201D8E398E6,
+				9218E2AE8C19F2ADCFF303E2,
+				6A741208A53D9C3807D03946,
+				4A608C9A5B9DB8425A877ADB,
+			); path = "UI"; sourceTree = "<group>"; };
+		3E7FC767603F3C493AB1FAE6 = {isa = PBXGroup; children = (
+				BCC31FEBA987766DFBE31D24,
+				319D72BA10288AFFA17F74ED,
+				47AE3F40388144761DD50187,
+				E5F480C4D5BAA8163D04FAF9,
+				C64F91A36BC1DFFBFBF7BCE4,
+				CF4671687AF1DB11E2670C73,
+				8241ED42B56CC1DA7F726566,
+			); sourceTree = "<group>"; };
+		47AE3F40388144761DD50187 /* Mac */ = {isa = PBXGroup; children = (
+				8B30E7555C62AF886999997E,
+				89EE7E4C907CB2EB4775C595,
+				050871B1EBACE81FB87B7E93,
+				FDFAC2A1B017F7413A22675A,
+				05FCE267EC4BF3351AADABBD,
+				68C5DCF9BDF9F9C0361F3D77,
+				0D453A417EA215812FA15AEB,
+			); path = "Mac"; sourceTree = "<group>"; };
+		68C5DCF9BDF9F9C0361F3D77 /* Resources */ = {isa = PBXGroup; children = (
+				9B2C0EEF9462B68C3ADF534E,
+				765E49B895378FE656B26086,
+				7ADC618111B5F38570A62E7B,
+				F0CAA984260B68C05E536F3B,
+				9224C43CE24E340C500C6A07,
+			); path = "Resources"; sourceTree = "<group>"; };
+		73D86E391E4D51C67D805DBD /* Input */ = {isa = PBXGroup; children = (
+				A9F29D6F62ED9AF269A92991,
+				5620B0E1ACC9B43678AB49CD,
+				A7CDEFEE0F9A6FCC08B83283,
+				3D18D4A9F3E755F5BCFC3DA0,
+			); path = "Input"; sourceTree = "<group>"; };
+		7CB937E958A728054F50BA23 /* Connection */ = {isa = PBXGroup; children = (
+				73559E8B5DFFD101BE29186C,
+				147D16F4E7B459F84D9E099D,
+			); path = "Connection"; sourceTree = "<group>"; };
+		8241ED42B56CC1DA7F726566 /* Products */ = {isa = PBXGroup; children = (
+				CE892ED33C791DCE8F3D61EB,
+				5EB64660FA3B7BF275B80FFA,
+				44B6C995BE2691863568287E,
+			); name = Products; sourceTree = "<group>"; };
+		88CEE856A88C4772400866F7 /* Resources */ = {isa = PBXGroup; children = (
+				D4BC43767BF065B33059D151,
+				CD8E277FF5210D2448F26777,
+			); path = "Resources"; sourceTree = "<group>"; };
+		89EE7E4C907CB2EB4775C595 /* Capture */ = {isa = PBXGroup; children = (
+				B5F4764544389A7E68FBDD4E,
+				4CA2B85B4930CFE268B10A96,
+			); path = "Capture"; sourceTree = "<group>"; };
+		8B30E7555C62AF886999997E /* App */ = {isa = PBXGroup; children = (
+				3ABC4BA993A7F7EA5DF0F66C,
+				0A195FCF7656758D0158E7AA,
+			); path = "App"; sourceTree = "<group>"; };
+		8F1960CCBF4B3BF762FA78CB /* TabletLink */ = {isa = PBXGroup; children = (
+				857E9FFCE2B2BA9FF2D292F9,
+				4DE2A89E3ACAAAE3A6106F82,
+				05181EC3B7FFC4CA136036A8,
+				AA4C895F1D56CD0DD3AE368F,
+			); path = "TabletLink"; sourceTree = "<group>"; };
+		BEA117B8BE9D53E741228D45 /* TabletCoreTests */ = {isa = PBXGroup; children = (
+				B748377F835FAF73DB771758,
+			); path = "TabletCoreTests"; sourceTree = "<group>"; };
+		C64F91A36BC1DFFBFBF7BCE4 /* Shared */ = {isa = PBXGroup; children = (
+				170A1BB09591AC50593B64EE,
+				F4B012088F34CF0C97AF3FE5,
+			); path = "Shared"; sourceTree = "<group>"; };
+		CF4671687AF1DB11E2670C73 /* docs */ = {isa = PBXGroup; children = (
+				718DE2FF874FE3504DFBB2D9,
+				E9817FDD3DC7D3434B7E8447,
+				6284FC865C7ECDD739189F22,
+				2BF01D2B777BA642C1C68F79,
+			); path = "docs"; sourceTree = "<group>"; };
+		E5F480C4D5BAA8163D04FAF9 /* iPad */ = {isa = PBXGroup; children = (
+				33F1314BF4952AAF7EA8ED2B,
+				7CB937E958A728054F50BA23,
+				73D86E391E4D51C67D805DBD,
+				88CEE856A88C4772400866F7,
+				3568985069F71AF7EEA8BA5E,
+			); path = "iPad"; sourceTree = "<group>"; };
+		F4B012088F34CF0C97AF3FE5 /* Tests */ = {isa = PBXGroup; children = (
+				BEA117B8BE9D53E741228D45,
+			); path = "Tests"; sourceTree = "<group>"; };
+		FDFAC2A1B017F7413A22675A /* Engine */ = {isa = PBXGroup; children = (
+				A318C48155370A61FF4DD6C1,
+				EC2F764F8C73010C70C757A9,
+				9BC495C95568150D1E632EA8,
+			); path = "Engine"; sourceTree = "<group>"; };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		032AF37725A10BC132279191 /* TabletPad */ = {isa = PBXNativeTarget; buildConfigurationList = 5889C470E9EC20A663E8F222; buildPhases = (926FBC247689B24ACC7A8672 /* Sources */, 1859E37ED125AE8AADBE4393 /* Frameworks */, B1406558F0E2731BB21B1EF8 /* Resources */, ); buildRules = ( ); dependencies = ( ); name = TabletPad; productName = TabletPad; productReference = 5EB64660FA3B7BF275B80FFA; productType = "com.apple.product-type.application"; };
+		22067528796176095666644F /* TabletCoreTests */ = {isa = PBXNativeTarget; buildConfigurationList = 4BFCB22F353306678266E4D4; buildPhases = (2BAA7AE24A10314E76659528 /* Sources */, 178023B67604D5E3E0A6924C /* Frameworks */, 57122B089F895E189F9C39E9 /* Resources */, ); buildRules = ( ); dependencies = ( ); name = TabletCoreTests; productName = TabletCoreTests; productReference = 44B6C995BE2691863568287E; productType = "com.apple.product-type.bundle.unit-test"; };
+		2CEFEB34E854A191D116911D /* TabletMac */ = {isa = PBXNativeTarget; buildConfigurationList = DCC15FA78694986716D93590; buildPhases = (164DA4DDC5CD04806B7E7260 /* Sources */, 9DDBA620129E0F9525FE9021 /* Frameworks */, 0F1A71703EB6DB3269A90873 /* Resources */, ); buildRules = ( ); dependencies = ( ); name = TabletMac; productName = TabletMac; productReference = CE892ED33C791DCE8F3D61EB; productType = "com.apple.product-type.application"; };
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		46F86FAA6BBF9AC94A7E4595 /* Project object */ = {isa = PBXProject; attributes = { BuildIndependentTargetsInParallel = 1; LastSwiftUpdateCheck = 1500; LastUpgradeCheck = 1500; TargetAttributes = {
+					2CEFEB34E854A191D116911D = { CreatedOnToolsVersion = 15.0; };
+					032AF37725A10BC132279191 = { CreatedOnToolsVersion = 15.0; };
+					22067528796176095666644F = { CreatedOnToolsVersion = 15.0; };
+				}; }; buildConfigurationList = AC4D63F12EBBDCB32DFBA89F; compatibilityVersion = "Xcode 14.0"; developmentRegion = it; hasScannedForEncodings = 0; knownRegions = ( it, en, Base, ); mainGroup = 3E7FC767603F3C493AB1FAE6; productRefGroup = 8241ED42B56CC1DA7F726566; projectDirPath = ""; projectRoot = ""; targets = (
+				2CEFEB34E854A191D116911D /* TabletMac */,
+				032AF37725A10BC132279191 /* TabletPad */,
+				22067528796176095666644F /* TabletCoreTests */,
+			); };
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		0F1A71703EB6DB3269A90873 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (
+				B70B24FFFC521D47C6468D89 /* Assets.xcassets in Resources */,
+				D2777CCB030CEA489AABDCB0 /* WebClient.html in Resources */,
+				BBF40B655BDD2A7BC3654A1B /* apple-touch-icon.png in Resources */,
+			); runOnlyForDeploymentPostprocessing = 0; };
+		57122B089F895E189F9C39E9 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (
+			); runOnlyForDeploymentPostprocessing = 0; };
+		B1406558F0E2731BB21B1EF8 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (
+				850B52D335A34275EE817661 /* Assets.xcassets in Resources */,
+			); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		164DA4DDC5CD04806B7E7260 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (
+				4FB5B42A3ABAD20D752D2222 /* AppState.swift in Sources */,
+				802B37ECA8280FC83720327C /* TabletMacApp.swift in Sources */,
+				25FCFA7D9F9FB727A2354ED7 /* RegionSelector.swift in Sources */,
+				88B2CA1DABC5070F7DEC96DE /* ScreenMirror.swift in Sources */,
+				27A5AA7C7C7BE0425B2E61E9 /* ConnectionManager.swift in Sources */,
+				1AC332823F1E76C3BCEAE56E /* FDTransport.swift in Sources */,
+				4A5E9285DE8189A347D26FB5 /* NetworkInfo.swift in Sources */,
+				FF782D43270A035F092A6839 /* USBMuxClient.swift in Sources */,
+				4B75FD5CD0BB6745314AC043 /* WebClientServer.swift in Sources */,
+				F15912AB0AEC412498081B47 /* WiFiServer.swift in Sources */,
+				306E717768857E0F05E053B3 /* CoordinateMapper.swift in Sources */,
+				2411DA0B1FDA635866993F3C /* ProfileStore.swift in Sources */,
+				6DABDED8316129AF9AF9E60A /* TabletEngine.swift in Sources */,
+				8E0B0B391C8A8831191A493C /* CGEventTabletBackend.swift in Sources */,
+				FE16B20DB12380E7348CCCD9 /* DisplayManager.swift in Sources */,
+				3CE15FB38B86558315357EE4 /* InputBackend.swift in Sources */,
+				09B584E43ED4C8AC25996AF2 /* KeyboardLayoutResolver.swift in Sources */,
+				4E6649A20A0934F5D11552C5 /* PermissionManager.swift in Sources */,
+				336B4A08D060588C56030486 /* SystemActions.swift in Sources */,
+				333E731E7A39605691B9BCCD /* AdvancedSettingsView.swift in Sources */,
+				57FF65FE38D9631A13855A27 /* ButtonsSettingsView.swift in Sources */,
+				1B36A6B48F689169B1DA81B3 /* ConnectionSettingsView.swift in Sources */,
+				9109244E4100DAE46A438CF0 /* DashboardView.swift in Sources */,
+				875A1A2550C969998B82FFF8 /* DisplayModeCard.swift in Sources */,
+				2DCBFBE418906C3A13F6C407 /* MappingSettingsView.swift in Sources */,
+				C4CFB28CDBBEE6C92D9A13CA /* MenuBarContent.swift in Sources */,
+				F3DEF6F1FF469F329608BBE6 /* OverviewView.swift in Sources */,
+				975970DDC4D5D427242EFD5C /* PenSettingsView.swift in Sources */,
+				B030B3CF726558CB0A37F0C4 /* ShortcutRecorder.swift in Sources */,
+				8DAFCD326EA8E28F1A379AA1 /* TestDiagnosticsView.swift in Sources */,
+				D6C72D2064E5ECF68301690A /* Theme.swift in Sources */,
+				47D44B7E2F5D644916806C82 /* TrackpadSettingsView.swift in Sources */,
+				2E63E1C14021BE9B44706C16 /* ByteCoding.swift in Sources */,
+				EAB7668AE13215B91637D618 /* Geometry.swift in Sources */,
+				01DBCE58B67F04878F3F1D19 /* LatencyStats.swift in Sources */,
+				4DF95CA8DF923ED451F4B4FE /* Messages.swift in Sources */,
+				6FFAF819C4486B60C566196E /* PenSample.swift in Sources */,
+				9B97EDD7E3BBD60DB03B7A55 /* PressureCurve.swift in Sources */,
+				46CB92BE5D9229B21787A9BF /* Profiles.swift in Sources */,
+				34B47EF94F0BE680C900509B /* Stabilizer.swift in Sources */,
+				13A1615A55864BD8DEE201FE /* ByteTransport.swift in Sources */,
+				ACD2BEB1EB13908F1B648A75 /* PeerChannel.swift in Sources */,
+				32B06785E4C133D648DE14A8 /* Security.swift in Sources */,
+				E29A44FB31B48FC680167835 /* TabletLog.swift in Sources */,
+			); runOnlyForDeploymentPostprocessing = 0; };
+		2BAA7AE24A10314E76659528 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (
+				792F9A1449D00E320F34298E /* ProtocolTests.swift in Sources */,
+				4D9FDD53E56F89DF95C7B4B1 /* ByteCoding.swift in Sources */,
+				4BDA52815651FF0CE092477E /* Geometry.swift in Sources */,
+				63B01C623648CEE4436E23DA /* LatencyStats.swift in Sources */,
+				E74B27B7613544A01AE8F6BA /* Messages.swift in Sources */,
+				8AE841894C40F5E210462178 /* PenSample.swift in Sources */,
+				918E6B7934A909691A3E92EA /* PressureCurve.swift in Sources */,
+				1FD4EDEFB7A0A450EB6579FD /* Profiles.swift in Sources */,
+				CD1AB0744500E0EC10EBC77A /* Stabilizer.swift in Sources */,
+			); runOnlyForDeploymentPostprocessing = 0; };
+		926FBC247689B24ACC7A8672 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (
+				02C5B16A64ADC22D7F281F87 /* TabletPadApp.swift in Sources */,
+				A96C0172504CE719113C8A20 /* MirrorFeed.swift in Sources */,
+				7E362B22A233178B7659A30B /* PadConnectionManager.swift in Sources */,
+				6092423ABB0C5029E74BC1D7 /* Calibration.swift in Sources */,
+				5A7D6F62238F5D07FA109906 /* CapabilityDetector.swift in Sources */,
+				9341F9089206764F9BF122B5 /* PencilSurfaceView.swift in Sources */,
+				0CE12228DD4A6E5F517CBB4B /* TabletInputController.swift in Sources */,
+				F31016BA86164786F3FF6558 /* CalibrationView.swift in Sources */,
+				E5447337E495012BEC8AB897 /* ConnectView.swift in Sources */,
+				E732E16815777CF0A063BE54 /* PadTheme.swift in Sources */,
+				469BE0CFB11AF4BF7AE59C23 /* SessionView.swift in Sources */,
+				F3D3659F0E442090E08CC184 /* ByteCoding.swift in Sources */,
+				CC97EC3063A5760DD21019E8 /* Geometry.swift in Sources */,
+				427BC03A9541FFA3B6366E86 /* LatencyStats.swift in Sources */,
+				C2433629D320CFF56AFAE42E /* Messages.swift in Sources */,
+				0E097EBE5D7C84040DD39C10 /* PenSample.swift in Sources */,
+				8866F8C3EE7CF3B2D9DF5500 /* PressureCurve.swift in Sources */,
+				A95DF2B9424E47B23E305C42 /* Profiles.swift in Sources */,
+				F636535083491A7A07EF9032 /* Stabilizer.swift in Sources */,
+				3AD324E683EF7C1F6E6F74C8 /* ByteTransport.swift in Sources */,
+				4BC0419955216D03B8E1B83E /* PeerChannel.swift in Sources */,
+				A29BA3FA796F74BE33182AC1 /* Security.swift in Sources */,
+				93E99514E84F1625321AE4B3 /* TabletLog.swift in Sources */,
+			); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		03E09CFA6F3B6CA7574DF724 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = "NO";
+				CLANG_ANALYZER_NONNULL = "YES";
+				CLANG_ENABLE_MODULES = "YES";
+				CLANG_ENABLE_OBJC_ARC = "YES";
+				CLANG_WARN_DOCUMENTATION_COMMENTS = "YES";
+				CODE_SIGN_STYLE = "Automatic";
+				COPY_PHASE_STRIP = "NO";
+				CURRENT_PROJECT_VERSION = "1";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = "NO";
+				ENABLE_STRICT_OBJC_MSGSEND = "YES";
+				ENABLE_USER_SCRIPT_SANDBOXING = "NO";
+				GCC_C_LANGUAGE_STANDARD = "gnu17";
+				GCC_NO_COMMON_BLOCKS = "YES";
+				IPHONEOS_DEPLOYMENT_TARGET = "17.0";
+				LOCALIZATION_PREFERS_STRING_CATALOGS = "YES";
+				MACOSX_DEPLOYMENT_TARGET = "14.0";
+				MARKETING_VERSION = "1.0.0";
+				SWIFT_COMPILATION_MODE = "wholemodule";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = "minimal";
+				SWIFT_VERSION = "5.0";
+			}; name = Release; };
+		331679F972028B2047928874 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				GENERATE_INFOPLIST_FILE = "YES";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jodyriva.ipadtablet.tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = "macosx";
+			}; name = Debug; };
+		4FE2124501771B6440F42DC5 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon";
+				CODE_SIGN_ENTITLEMENTS = "Mac/Resources/TabletMac.entitlements";
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = "YES";
+				ENABLE_HARDENED_RUNTIME = "YES";
+				GENERATE_INFOPLIST_FILE = "NO";
+				INFOPLIST_FILE = "Mac/Resources/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jodyriva.ipadtablet.mac";
+				PRODUCT_MODULE_NAME = "TabletMac";
+				PRODUCT_NAME = "iPad Graphic Tablet";
+				SDKROOT = "macosx";
+			}; name = Debug; };
+		51E9D9B7E1DA122B00FDBE9C /* Release */ = {isa = XCBuildConfiguration; buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				GENERATE_INFOPLIST_FILE = "YES";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jodyriva.ipadtablet.tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = "macosx";
+			}; name = Release; };
+		6011418063312C3D45CD54B5 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon";
+				CODE_SIGN_ENTITLEMENTS = "Mac/Resources/TabletMac.entitlements";
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = "YES";
+				ENABLE_HARDENED_RUNTIME = "YES";
+				GENERATE_INFOPLIST_FILE = "NO";
+				INFOPLIST_FILE = "Mac/Resources/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jodyriva.ipadtablet.mac";
+				PRODUCT_MODULE_NAME = "TabletMac";
+				PRODUCT_NAME = "iPad Graphic Tablet";
+				SDKROOT = "macosx";
+			}; name = Release; };
+		64709C05FD3E8D2FCB9AC2AD /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = "NO";
+				CLANG_ANALYZER_NONNULL = "YES";
+				CLANG_ENABLE_MODULES = "YES";
+				CLANG_ENABLE_OBJC_ARC = "YES";
+				CLANG_WARN_DOCUMENTATION_COMMENTS = "YES";
+				CODE_SIGN_STYLE = "Automatic";
+				COPY_PHASE_STRIP = "NO";
+				CURRENT_PROJECT_VERSION = "1";
+				DEBUG_INFORMATION_FORMAT = "dwarf";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = "YES";
+				ENABLE_TESTABILITY = "YES";
+				ENABLE_USER_SCRIPT_SANDBOXING = "NO";
+				GCC_C_LANGUAGE_STANDARD = "gnu17";
+				GCC_DYNAMIC_NO_PIC = "NO";
+				GCC_NO_COMMON_BLOCKS = "YES";
+				GCC_OPTIMIZATION_LEVEL = "0";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = "17.0";
+				LOCALIZATION_PREFERS_STRING_CATALOGS = "YES";
+				MACOSX_DEPLOYMENT_TARGET = "14.0";
+				MARKETING_VERSION = "1.0.0";
+				ONLY_ACTIVE_ARCH = "YES";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = "minimal";
+				SWIFT_VERSION = "5.0";
+			}; name = Debug; };
+		BD5B1CA9D5152DCC07D5F63F /* Release */ = {isa = XCBuildConfiguration; buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon";
+				GENERATE_INFOPLIST_FILE = "NO";
+				INFOPLIST_FILE = "iPad/Resources/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jodyriva.ipadtablet.pad";
+				PRODUCT_MODULE_NAME = "TabletPad";
+				PRODUCT_NAME = "Graphic Tablet";
+				SDKROOT = "iphoneos";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = "NO";
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = "NO";
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = "NO";
+				TARGETED_DEVICE_FAMILY = "2";
+				VALIDATE_PRODUCT = "YES";
+			}; name = Release; };
+		EAD0CEB094962C11E00B8A4F /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon";
+				GENERATE_INFOPLIST_FILE = "NO";
+				INFOPLIST_FILE = "iPad/Resources/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jodyriva.ipadtablet.pad";
+				PRODUCT_MODULE_NAME = "TabletPad";
+				PRODUCT_NAME = "Graphic Tablet";
+				SDKROOT = "iphoneos";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = "NO";
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = "NO";
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = "NO";
+				TARGETED_DEVICE_FAMILY = "2";
+			}; name = Debug; };
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4BFCB22F353306678266E4D4 /* Build configuration list for PBXNativeTarget "TabletCoreTests" */ = {isa = XCConfigurationList; buildConfigurations = (331679F972028B2047928874 /* Debug */, 51E9D9B7E1DA122B00FDBE9C /* Release */, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		5889C470E9EC20A663E8F222 /* Build configuration list for PBXNativeTarget "TabletPad" */ = {isa = XCConfigurationList; buildConfigurations = (EAD0CEB094962C11E00B8A4F /* Debug */, BD5B1CA9D5152DCC07D5F63F /* Release */, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		AC4D63F12EBBDCB32DFBA89F /* Build configuration list for PBXProject "iPadGraphicTablet" */ = {isa = XCConfigurationList; buildConfigurations = (64709C05FD3E8D2FCB9AC2AD /* Debug */, 03E09CFA6F3B6CA7574DF724 /* Release */, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		DCC15FA78694986716D93590 /* Build configuration list for PBXNativeTarget "TabletMac" */ = {isa = XCConfigurationList; buildConfigurations = (4FE2124501771B6440F42DC5 /* Debug */, 6011418063312C3D45CD54B5 /* Release */, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+/* End XCConfigurationList section */
+	};
+	rootObject = 46F86FAA6BBF9AC94A7E4595 /* Project object */;
+}

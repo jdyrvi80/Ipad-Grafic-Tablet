@@ -1,0 +1,11 @@
+{
+  "name": "webclient-tests",
+  "private": true,
+  "description": "Test del client web Safari: codec binario contro un decoder di riferimento, HMAC, prova end-to-end in DOM simulato",
+  "scripts": {
+    "test": "python3 extract.py && node gen.js > js_out.json && python3 check.py && node dec.js && node smoke.js && node smoke_touch.js && node smoke_touch_run.js && node smoke_display.js && node smoke_display_run.js"
+  },
+  "devDependencies": {
+    "jsdom": "^24.0.0"
+  }
+}

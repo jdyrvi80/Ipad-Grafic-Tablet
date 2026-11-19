@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+	  Sandbox DISATTIVATA di proposito:
+	   • il socket /var/run/usbmuxd (collegamento USB) non è accessibile da un'app sandbox;
+	   • la generazione di eventi di input verso altre app richiede un'app non sandbox.
+	  Per questo l'app si distribuisce fuori dal Mac App Store (firma Developer ID + notarizzazione).
+	-->
+	<key>com.apple.security.app-sandbox</key>
+	<false/>
+</dict>
+</plist>

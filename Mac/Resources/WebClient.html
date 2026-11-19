@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<!--
+  iPad Graphic Tablet — client web per Safari (nessuna app da installare sull'iPad).
+  Servito dall'app Mac su http://<IP-del-Mac>:47830
+  Usa lo STESSO protocollo binario dell'app iPad (docs/PROTOCOLLO.md), trasportato su
+  WebSocket (porta 47831). Accesso protetto da un codice a 6 cifre mostrato dal Mac
+  (challenge-response HMAC-SHA256: il codice non viaggia mai in rete).
+  Vanilla JS, nessuna dipendenza.
+-->
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tablet">
+<meta name="theme-color" content="#000000">
+<title>iPad Graphic Tablet</title>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="/apple-touch-icon.png">
+<style>
+  :root {
+    --accent: #ff2e2e; --ok: #40e07a; --web: #5aa6ff; --warn: #ffbd33;
+    --sec: rgba(255,255,255,.55); --ter: rgba(255,255,255,.3); --card: #121212; --stroke: rgba(255,255,255,.1);
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; -webkit-user-select: none; user-select: none;
+      -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; background: #000; color: #fff; overflow: hidden;
+      overscroll-behavior: none; font: 15px/1.4 -apple-system, system-ui, sans-serif; }
+  input { -webkit-user-select: text; user-select: text; }
+
+  /* Superficie di cattura: trasparente sopra lo schermo del Mac (modalità Display), nessun gesto del browser */
+  #surface { position: fixed; inset: 0; background: transparent; touch-action: none; display: none; z-index: 1; }
+  body.session #surface { display: block; }
+  /* Modalità Display: immagine dello schermo del Mac, sotto la superficie di input */
+  #screen { position: fixed; display: none; z-index: 0; background: #000; image-rendering: auto; }
+  body.session.mirror #screen.ready { display: block; }
+  #mirrorMsg { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); display: none; z-index: 2;
+      max-width: 70%; text-align: center; color: var(--sec); font-size: 15px; pointer-events: none; }
+  body.session.mirror #mirrorMsg.visible { display: block; }
+
+  #area { position: fixed; border: 1px dashed rgba(255,255,255,.22); pointer-events: none; display: none; z-index: 2; }
+  #fdiag { position: fixed; left: 12px; bottom: 12px; z-index: 4; display: none; pointer-events: none;
+      padding: 6px 10px; border-radius: 10px; background: rgba(20,20,20,.85); color: #fff;
+      font: 12px ui-monospace, Menlo, monospace; }
+  body.session.fdiag #fdiag { display: block; }
+  /* Modalità Trackpad: superficie per le dita */
+  #tpad { position: fixed; inset: 18px; display: none; z-index: 0; pointer-events: none;
+      border: 1px solid rgba(255,255,255,.08); border-radius: 28px;
+      background: radial-gradient(ellipse at 50% 40%, rgba(255,255,255,.035), rgba(255,255,255,0) 70%); }
+  #tpad span { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center;
+      font: 12px var(--mono); letter-spacing: .2em; color: rgba(255,255,255,.18); white-space: nowrap; }
+  body.session.trackpad #tpad { display: block; }
+  #dot { position: fixed; z-index: 2; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%;
+         background: rgba(255,255,255,.35); pointer-events: none; display: none; }
+
+  /* Stato */
+  #status { position: fixed; top: 14px; right: 14px; display: none; align-items: center; gap: 10px; z-index: 4;
+      padding: 6px 8px 6px 12px; border-radius: 999px; background: rgba(255,255,255,.06); opacity: .8; }
+  body.session #status { display: flex; }
+  body.lefty #status { right: auto; left: 14px; }
+  #status .d { width: 7px; height: 7px; border-radius: 50%; background: var(--web); }
+  #status .t { font: 11px var(--mono); }
+  #status .p { font: 10px var(--mono); color: var(--ter); max-width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .round { width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,.1); border: 0; color: #fff;
+      font-size: 14px; display: inline-flex; align-items: center; justify-content: center; touch-action: none; }
+  #warn { position: fixed; top: 56px; right: 14px; display: none; padding: 6px 12px; border-radius: 999px; z-index: 4;
+      background: rgba(255,46,46,.85); font-size: 12px; font-weight: 600; }
+  body.lefty #warn { right: auto; left: 14px; }
+  #hint { position: fixed; top: 56px; right: 14px; display: none; font-size: 12px; color: var(--sec); z-index: 4; }
+
+  /* Menu rapido */
+  #menu { position: fixed; top: 56px; right: 14px; width: 260px; display: none; padding: 8px;
+      background: #161616; border: 1px solid var(--stroke); border-radius: 16px; z-index: 5; }
+  body.lefty #menu { right: auto; left: 14px; }
+  #menu.open { display: block; }
+  #menu h4 { margin: 6px 8px; font: 10px var(--mono); letter-spacing: 1.4px; color: var(--sec); text-transform: uppercase; }
+  #menu button { display: block; width: 100%; text-align: left; padding: 10px 12px; border: 0; border-radius: 10px;
+      background: transparent; color: #fff; font-size: 15px; }
+  #menu button.on { background: rgba(255,46,46,.25); }
+  #menu button:active { background: rgba(255,255,255,.08); }
+
+  /* Schermata di connessione */
+  #connect { position: fixed; inset: 0; overflow-y: auto; padding: 48px 24px; display: flex; justify-content: center; z-index: 6; }
+  body.session #connect { display: none; }
+  .wrap { width: 100%; max-width: 620px; }
+  h1 { font-size: 32px; font-weight: 600; margin: 0 0 6px; }
+  .state { display: flex; align-items: center; gap: 8px; color: var(--sec); margin-bottom: 24px; }
+  .state i { width: 9px; height: 9px; border-radius: 50%; background: var(--ter); display: inline-block; }
+  .card { background: var(--card); border: 1px solid var(--stroke); border-radius: 18px; padding: 20px; margin-bottom: 18px; }
+  .card h2 { margin: 0 0 12px; font: 12px var(--mono); letter-spacing: 1.5px; color: var(--sec); text-transform: uppercase; font-weight: 500; }
+  .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  #code { font: 600 34px var(--mono); letter-spacing: 8px; width: 230px; text-align: center; padding: 10px;
+      border-radius: 12px; border: 1px solid var(--stroke); background: #000; color: #fff; }
+  .btn { padding: 14px 22px; border-radius: 12px; border: 0; font-size: 17px; font-weight: 600; background: var(--accent); color: #fff; }
+  .btn.sec { background: rgba(255,255,255,.1); }
+  .small { font-size: 13px; color: var(--sec); }
+  .err { color: var(--accent); min-height: 20px; margin-top: 10px; }
+  ul { margin: 8px 0 0; padding-left: 18px; color: var(--sec); font-size: 14px; }
+  li { margin: 4px 0; }
+  .caps { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .cap { font: 11px var(--mono); padding: 4px 9px; border-radius: 999px; border: 1px solid var(--stroke); color: var(--ter); }
+  .cap.on { background: rgba(255,255,255,.14); color: #fff; border-color: transparent; }
+  label.chk { display: flex; gap: 10px; align-items: center; margin-top: 12px; color: var(--sec); }
+  label.chk input { width: 20px; height: 20px; }
+</style>
+</head>
+<body>
+
+<canvas id="screen"></canvas>
+<div id="mirrorMsg"></div>
+<div id="surface"></div>
+<div id="area"></div>
+<div id="dot"></div>
+
+<div id="status">
+  <span class="d"></span><span class="t" id="stLink">Safari</span><span class="p" id="stProfile"></span>
+  <button class="round" id="menuBtn" aria-label="Menu">☰</button>
+  <button class="round" id="exitBtn" aria-label="Esci">✕</button>
+</div>
+<div id="warn">Sul Mac concedi il permesso Accessibilità</div>
+<div id="hint">Tieni premuto ✕ per uscire</div>
+<div id="fdiag"></div>
+<div id="tpad"><span>TRACKPAD</span></div>
+
+<div id="menu">
+  <h4>Modalità</h4>
+  <button data-mode="4" id="mDisplay">Display (schermo del Mac)</button>
+  <button data-mode="3" id="mTrackpad">Trackpad</button>
+  <h4>Comandi</h4>
+  <button data-cmd="2" id="mLock">Blocca cursore</button>
+  <button data-cmd="3" id="mPrec">Modalità precisione</button>
+  <button data-cmd="5" id="mEraser">Penna ↔ gomma</button>
+  <button id="mDot">Punto penna</button>
+  <button id="mDiag">Diagnostica dita</button>
+  <button id="mFull">Schermo intero</button>
+</div>
+
+<div id="connect">
+  <div class="wrap">
+    <h1>iPad Graphic Tablet</h1>
+    <div class="state"><i id="stateDot"></i><span id="stateText">Inserisci il codice mostrato dal Mac</span></div>
+
+    <div class="card">
+      <h2>Codice di accesso</h2>
+      <div class="row">
+        <input id="code" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" placeholder="000000">
+        <button class="btn" id="connectBtn">Collega</button>
+      </div>
+      <label class="chk"><input type="checkbox" id="fullChk" checked> Schermo intero al collegamento</label>
+      <div class="err" id="err"></div>
+      <div class="small">Il codice è nella app del Mac: Connessione → Safari (senza app). Viene ricordato su questo iPad.</div>
+    </div>
+
+    <div class="card">
+      <h2>Apple Pencil rilevata</h2>
+      <div class="small">Le funzioni si attivano solo quando Safari le riporta davvero.</div>
+      <div class="caps" id="caps"></div>
+    </div>
+
+    <div class="card">
+      <h2>Consigli</h2>
+      <ul>
+        <li><b>Impostazioni → Schermo e luminosità → Blocco automatico: Mai</b> durante l'uso (una pagina web non può impedire lo stop dello schermo su una connessione http).</li>
+        <li>Per togliere le barre di Safari: Condividi → <b>Aggiungi alla schermata Home</b> (è un segnalibro, non un'app) e aprila da lì.</li>
+        <li>Abbassa la luminosità: lo schermo resta nero, la Pencil continua a funzionare.</li>
+        <li>Rispetto all'app iPad: niente doppio tocco/squeeze/rotazione della Pencil (Safari non li espone) e traffico non cifrato sulla rete locale.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* CODEC-BEGIN ───────────── protocollo binario (identico a TabletCore/Messages.swift) ───────────── */
+const WIRE_VERSION = 1;
+const MT = { hello: 1, welcome: 2, sessionConfig: 3, penBatch: 4, gesture: 5, button: 6, pencilGesture: 7,
+             control: 8, ping: 9, pong: 10, pairingKey: 11, deviceUpdate: 12, bye: 13, videoFrame: 14, frameAck: 15 };
+const FLAG = { contact: 1, hovering: 2, began: 4, ended: 8, cancelled: 16, predicted: 32, estimated: 64, proxOut: 128 };
+const CAP = { pressure: 1, tilt: 2, hover: 4, roll: 8, doubleTap: 16, squeeze: 32, multitouch: 64, video: 128 };
+const GK = { pointerMove: 0, leftClick: 1, rightClick: 2, doubleClick: 3, dragBegin: 4, dragMove: 5,
+             dragEnd: 6, scroll: 7, pinch: 8, gestureEnd: 9, pointTo: 10, tapAt: 11, doubleTapAt: 12,
+             rightTapAt: 13, multiMove: 14, multiEnd: 15, multiPinch: 16, threeFingerTap: 17 };
+const FULL_RECT = { x: 0, y: 0, w: 1, h: 1 };
+const CMD = { setMode: 0, nextProfile: 1, toggleCursorLock: 2, togglePrecision: 3, setToolbarVisible: 4, toggleEraser: 5 };
+
+const utf8Enc = new TextEncoder();
+const utf8Dec = new TextDecoder('utf-8');
+
+class Writer {
+  constructor(cap) { this._alloc(cap || 64); this.len = 0; }
+  _alloc(cap) { this.buf = new ArrayBuffer(cap); this.view = new DataView(this.buf); this.bytes = new Uint8Array(this.buf); }
+  ensure(n) {
+    if (this.len + n <= this.buf.byteLength) return;
+    let cap = this.buf.byteLength * 2;
+    while (cap < this.len + n) cap *= 2;
+    const old = this.bytes.subarray(0, this.len);
+    this._alloc(cap);
+    this.bytes.set(old);
+  }
+  u8(v)  { this.ensure(1); this.view.setUint8(this.len, v & 0xff); this.len += 1; }
+  bool(v){ this.u8(v ? 1 : 0); }
+  u16(v) { this.ensure(2); this.view.setUint16(this.len, v & 0xffff, true); this.len += 2; }
+  u32(v) { this.ensure(4); this.view.setUint32(this.len, v >>> 0, true); this.len += 4; }
+  i32(v) { this.ensure(4); this.view.setInt32(this.len, v | 0, true); this.len += 4; }
+  f32(v) { this.ensure(4); this.view.setFloat32(this.len, v, true); this.len += 4; }
+  f64(v) { this.ensure(8); this.view.setFloat64(this.len, v, true); this.len += 8; }
+  str(s) {
+    let b = utf8Enc.encode(String(s));
+    if (b.length > 65535) b = b.subarray(0, 65535);
+    this.u16(b.length); this.ensure(b.length); this.bytes.set(b, this.len); this.len += b.length;
+  }
+  result() { return this.bytes.slice(0, this.len); }
+}
+
+class Reader {
+  constructor(u8) { this.u8a = u8; this.view = new DataView(u8.buffer, u8.byteOffset, u8.byteLength); this.off = 0; }
+  need(n) { if (this.off + n > this.view.byteLength) throw new Error('pacchetto troncato'); }
+  u8()  { this.need(1); return this.view.getUint8(this.off++); }
+  bool(){ return this.u8() !== 0; }
+  u16() { this.need(2); const v = this.view.getUint16(this.off, true); this.off += 2; return v; }
+  u32() { this.need(4); const v = this.view.getUint32(this.off, true); this.off += 4; return v; }
+  i32() { this.need(4); const v = this.view.getInt32(this.off, true); this.off += 4; return v; }
+  f32() { this.need(4); const v = this.view.getFloat32(this.off, true); this.off += 4; return v; }
+  f64() { this.need(8); const v = this.view.getFloat64(this.off, true); this.off += 8; return v; }
+  str() { const n = this.u16(); this.need(n); const s = utf8Dec.decode(this.u8a.subarray(this.off, this.off + n)); this.off += n; return s; }
+  blob(){ const n = this.u32(); this.need(n); const b = this.u8a.slice(this.off, this.off + n); this.off += n; return b; }
+}
+
+/** Frame: [u32 lunghezza = 1 + payload][u8 tipo][payload] */
+function frame(type, fill) {
+  const w = new Writer(64);
+  w.u32(0); w.u8(type);
+  if (fill) fill(w);
+  w.view.setUint32(0, w.len - 4, true);
+  return w.result();
+}
+
+function q16(v) { v = Math.min(Math.max(v, 0), 1); return Math.round(v * 65535); }
+function wrapAngle(a) { const t = Math.PI * 2; let r = a % t; if (r < 0) r += t; return r; }
+
+/** Campione da 32 byte (vedi PenSample.swift) */
+function writeSample(w, s) {
+  w.u32(s.seq >>> 0);
+  w.f64(s.t);
+  w.f32(s.x); w.f32(s.y);
+  w.u16(q16(s.p));
+  w.u16(q16(Math.min(Math.max(s.alt, 0), Math.PI / 2) / (Math.PI / 2)));
+  w.u16(q16(wrapAngle(s.az) / (Math.PI * 2)));
+  w.u16(q16(wrapAngle(s.roll || 0) / (Math.PI * 2)));
+  w.u16(q16(s.hover || 0));
+  w.u8(s.flags); w.u8(0);
+}
+
+const Codec = {
+  hello(h) {
+    return frame(MT.hello, w => {
+      w.u16(WIRE_VERSION); w.str(h.deviceID); w.str(h.deviceName); w.str(h.model); w.str(h.systemVersion);
+      w.u16(h.capabilities); w.f32(h.width); w.f32(h.height); w.f32(h.scale);
+    });
+  },
+  penBatch(samples) { return frame(MT.penBatch, w => { w.u16(samples.length); for (const s of samples) writeSample(w, s); }); },
+  gesture(kind, dx, dy, scale, fingers) {
+    return frame(MT.gesture, w => { w.u8(kind); w.f32(dx || 0); w.f32(dy || 0); w.f32(scale == null ? 1 : scale); w.u8(fingers || 1); });
+  },
+  button(id, pressed) { return frame(MT.button, w => { w.u16(id); w.bool(pressed); }); },
+  control(cmd, value) { return frame(MT.control, w => { w.u8(cmd); w.i32(value || 0); }); },
+  ping(id, sentAt) { return frame(MT.ping, w => { w.u32(id); w.f64(sentAt); }); },
+  pong(id, sentAt, peerTime) { return frame(MT.pong, w => { w.u32(id); w.f64(sentAt); w.f64(peerTime); }); },
+  deviceUpdate(caps, width, height) { return frame(MT.deviceUpdate, w => { w.u16(caps); w.f32(width); w.f32(height); }); },
+  bye(reason) { return frame(MT.bye, w => w.str(reason || '')); },
+  frameAck(id) { return frame(MT.frameAck, w => w.u32(id)); },
+
+  /** Decodifica i messaggi Mac → iPad. */
+  decode(type, payload) {
+    const r = new Reader(payload);
+    switch (type) {
+      case MT.welcome:
+        return { kind: 'welcome', version: r.u16(), macID: r.str(), macName: r.str(), accepted: r.bool(), reason: r.str() };
+      case MT.sessionConfig: {
+        const c = { kind: 'config', mode: r.u8(), profileName: r.str(), displayName: r.str(),
+                    rect: { x: r.f32(), y: r.f32(), w: r.f32(), h: r.f32() },
+                    showRect: r.bool(), leftHanded: r.bool(), toolbarVisible: r.bool(), toolbar: [] };
+        const n = r.u16();
+        for (let i = 0; i < n; i++) c.toolbar.push({ id: r.u16(), label: r.str(), symbol: r.str(), hold: r.bool() });
+        c.locked = r.bool(); c.precision = r.bool(); c.palm = r.bool(); c.eraser = r.bool();
+        c.canPost = r.bool(); c.rtt = r.f32();
+        // Campi della modalità Display (assenti nelle versioni precedenti del Mac).
+        c.mirror = false; c.mirrorStatus = ''; c.mirrorRegion = FULL_RECT;
+        if (r.off < r.view.byteLength) { c.mirror = r.bool(); c.mirrorStatus = r.str(); }
+        if (r.off < r.view.byteLength) c.mirrorRegion = { x: r.f32(), y: r.f32(), w: r.f32(), h: r.f32() };
+        return c;
+      }
+      case MT.ping: return { kind: 'ping', id: r.u32(), sentAt: r.f64() };
+      case MT.pong: return { kind: 'pong', id: r.u32(), sentAt: r.f64(), peerTime: r.f64() };
+      case MT.bye: return { kind: 'bye', reason: r.str() };
+      case MT.videoFrame: {
+        const v = { kind: 'video', id: r.u32(), t: r.f64(), w: r.u16(), h: r.u16(), format: r.u8(), data: r.blob(),
+                    region: FULL_RECT };
+        // Area del monitor contenuta nel fotogramma (assente nelle versioni precedenti).
+        if (r.off < r.view.byteLength) v.region = { x: r.f32(), y: r.f32(), w: r.f32(), h: r.f32() };
+        return v;
+      }
+      case MT.pairingKey: return { kind: 'ignored' };   // solo per l'app nativa
+      default: return { kind: 'unknown', type };
+    }
+  }
+};
+
+/** Ricostruzione dei frame da un flusso di byte. */
+class FrameDecoder {
+  constructor() { this.buf = new Uint8Array(0); }
+  push(chunk) {
+    const nb = new Uint8Array(this.buf.length + chunk.length);
+    nb.set(this.buf); nb.set(chunk, this.buf.length); this.buf = nb;
+    const out = [];
+    while (this.buf.length >= 5) {
+      const len = new DataView(this.buf.buffer, this.buf.byteOffset, 4).getUint32(0, true);
+      if (len < 1 || len > 16 * 1024 * 1024) throw new Error('frame non valido');
+      if (this.buf.length < 4 + len) break;
+      out.push({ type: this.buf[4], payload: this.buf.slice(5, 4 + len) });
+      this.buf = this.buf.slice(4 + len);
+    }
+    return out;
+  }
+}
+/* CODEC-END */
+
+/* HMAC-BEGIN ───── SHA-256 / HMAC (crypto.subtle non è disponibile su http) ───── */
+const SHA_K = new Uint32Array([
+  0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+  0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+  0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+  0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+  0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+  0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+  0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+  0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2]);
+
+function rotr(x, n) { return (x >>> n) | (x << (32 - n)); }
+
+function sha256(bytes) {
+  const l = bytes.length;
+  const total = ((l + 9 + 63) >> 6) << 6;
+  const m = new Uint8Array(total);
+  m.set(bytes); m[l] = 0x80;
+  const dv = new DataView(m.buffer);
+  dv.setUint32(total - 8, Math.floor(l / 0x20000000));
+  dv.setUint32(total - 4, (l << 3) >>> 0);
+  const H = new Uint32Array([0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19]);
+  const W = new Uint32Array(64);
+  for (let i = 0; i < total; i += 64) {
+    for (let t = 0; t < 16; t++) W[t] = dv.getUint32(i + t * 4);
+    for (let t = 16; t < 64; t++) {
+      const x = W[t - 15], y = W[t - 2];
+      const s0 = rotr(x, 7) ^ rotr(x, 18) ^ (x >>> 3);
+      const s1 = rotr(y, 17) ^ rotr(y, 19) ^ (y >>> 10);
+      W[t] = (W[t - 16] + s0 + W[t - 7] + s1) >>> 0;
+    }
+    let a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+    for (let t = 0; t < 64; t++) {
+      const S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
+      const ch = (e & f) ^ (~e & g);
+      const t1 = (h + S1 + ch + SHA_K[t] + W[t]) >>> 0;
+      const S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
+      const maj = (a & b) ^ (a & c) ^ (b & c);
+      const t2 = (S0 + maj) >>> 0;
+      h = g; g = f; f = e; e = (d + t1) >>> 0; d = c; c = b; b = a; a = (t1 + t2) >>> 0;
+    }
+    H[0] = (H[0] + a) >>> 0; H[1] = (H[1] + b) >>> 0; H[2] = (H[2] + c) >>> 0; H[3] = (H[3] + d) >>> 0;
+    H[4] = (H[4] + e) >>> 0; H[5] = (H[5] + f) >>> 0; H[6] = (H[6] + g) >>> 0; H[7] = (H[7] + h) >>> 0;
+  }
+  const out = new Uint8Array(32);
+  const ov = new DataView(out.buffer);
+  for (let i = 0; i < 8; i++) ov.setUint32(i * 4, H[i]);
+  return out;
+}
+
+function hmacSha256(key, msg) {
+  if (key.length > 64) key = sha256(key);
+  const k = new Uint8Array(64); k.set(key);
+  const inner = new Uint8Array(64 + msg.length);
+  const outer = new Uint8Array(64 + 32);
+  for (let i = 0; i < 64; i++) { inner[i] = k[i] ^ 0x36; outer[i] = k[i] ^ 0x5c; }
+  inner.set(msg, 64);
+  outer.set(sha256(inner), 64);
+  return sha256(outer);
+}
+
+function toHex(u8) { return Array.from(u8, b => b.toString(16).padStart(2, '0')).join(''); }
+/* HMAC-END */
+
+/* ───────────────────────────── applicazione ───────────────────────────── */
+
+const $ = id => document.getElementById(id);
+const surface = $('surface');
+const now = () => performance.now();          // ms, stesso orologio di event.timeStamp
+
+function randomID() {
+  // crypto.randomUUID richiede https: si usa getRandomValues, disponibile anche su http.
+  const b = new Uint8Array(16); crypto.getRandomValues(b);
+  b[6] = (b[6] & 0x0f) | 0x40; b[8] = (b[8] & 0x3f) | 0x80;
+  const h = toHex(b);
+  return `${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`.toUpperCase();
+}
+
+function store(key, value) { try { localStorage.setItem(key, value); } catch (_) {} }
+function load(key) { try { return localStorage.getItem(key); } catch (_) { return null; } }
+
+const app = {
+  ws: null, authed: false, inSession: false, wantConnected: false,
+  code: load('tabletCode') || '',
+  deviceID: load('tabletDeviceID') || (() => { const id = randomID(); store('tabletDeviceID', id); return id; })(),
+  caps: CAP.multitouch | CAP.video,
+  haveFrame: false,
+  seq: 0, config: null, rtt: 0, macName: '', pingID: 0, decoder: new FrameDecoder(),
+  rect: { left: 0, top: 0, width: 1, height: 1 },
+  showDot: load('tabletDot') === '1',
+  pen: { down: false, id: null, activeUntil: 0, hoverTimer: null, hoverCount: 0, hoverFirst: 0, inHover: false,
+         sMin: 1, sMax: 0, sN: 0, flat: 0 },
+};
+if (load('tabletPressure') === '1') app.caps |= CAP.pressure;
+
+// ───────── connessione
+
+function wsURL() {
+  const port = (parseInt(location.port, 10) || 80) + 1;
+  return `ws://${location.hostname}:${port}/`;
+}
+
+function setState(text, color) {
+  $('stateText').textContent = text;
+  $('stateDot').style.background = color || 'var(--ter)';
+}
+
+function connect() {
+  const code = $('code').value.replace(/\D/g, '');
+  if (code.length !== 6) { $('err').textContent = 'Il codice è di 6 cifre.'; return; }
+  $('err').textContent = '';
+  app.code = code; store('tabletCode', code);
+  app.wantConnected = true;
+  if ($('fullChk').checked) enterFullscreen();
+  openSocket();
+}
+
+function openSocket() {
+  if (app.ws || !app.wantConnected) return;
+  setState('Connessione al Mac…', 'var(--warn)');
+  let ws;
+  try { ws = new WebSocket(wsURL()); } catch (e) { setState('Impossibile aprire la connessione', 'var(--accent)'); return; }
+  ws.binaryType = 'arraybuffer';
+  app.ws = ws; app.authed = false; app.decoder = new FrameDecoder();
+  ws.onmessage = ev => {
+    if (typeof ev.data === 'string') onText(ev.data);
+    else onBinary(new Uint8Array(ev.data));
+  };
+  ws.onclose = () => {
+    const wasSession = app.inSession;
+    app.ws = null; app.authed = false;
+    leaveSession();
+    if (app.wantConnected) {
+      setState(wasSession ? 'Connessione persa, nuovo tentativo…' : 'Mac non raggiungibile, nuovo tentativo…', 'var(--warn)');
+      setTimeout(openSocket, 2000);
+    }
+  };
+  ws.onerror = () => {};
+}
+
+function send(bytes) {
+  if (app.ws && app.authed && app.ws.readyState === 1) app.ws.send(bytes);
+}
+
+/** Versione della pagina, scritta dal Mac quando la serve. */
+const PAGE_VERSION = '__PAGE_VERSION__';
+
+function onText(text) {
+  let m; try { m = JSON.parse(text); } catch (_) { return; }
+  if (m.t === 'auth' && typeof m.v === 'string' && PAGE_VERSION.indexOf('__') !== 0 && m.v !== PAGE_VERSION) {
+    // Il Mac è stato aggiornato: questa pagina è vecchia. Si ricarica e si ricollega da sola
+    // (al massimo una volta ogni 15 secondi, per non entrare mai in un ciclo).
+    const last = Number(load('tabletReloadAt') || 0);
+    if (Date.now() - last > 15000) {
+      store('tabletReloadAt', String(Date.now()));
+      store('tabletAutoConnect', '1');
+      try { app.ws.close(); } catch (_) {}
+      location.reload();
+      return;
+    }
+    $('err').textContent = 'Questa pagina è di una versione precedente: ricaricala da Safari.';
+  }
+  if (m.t === 'auth' && typeof m.nonce === 'string') {
+    // Challenge-response: si invia HMAC(codice, nonce), mai il codice.
+    const proof = toHex(hmacSha256(utf8Enc.encode(app.code), utf8Enc.encode(m.nonce)));
+    app.ws.send(JSON.stringify({ t: 'auth', proof }));
+  } else if (m.t === 'ok') {
+    app.authed = true;
+    send(Codec.hello(helloInfo()));
+  } else if (m.t === 'denied') {
+    app.wantConnected = false;
+    $('err').textContent = m.reason || 'Codice errato.';
+    setState('Accesso negato', 'var(--accent)');
+    try { app.ws.close(); } catch (_) {}
+  }
+}
+
+function onBinary(chunk) {
+  let frames;
+  try { frames = app.decoder.push(chunk); } catch (e) { app.ws.close(); return; }
+  for (const f of frames) {
+    let m; try { m = Codec.decode(f.type, f.payload); } catch (_) { continue; }
+    switch (m.kind) {
+      case 'welcome':
+        if (!m.accepted) {
+          app.wantConnected = false;
+          $('err').textContent = m.reason || 'Il Mac ha rifiutato la connessione.';
+          setState('Rifiutato', 'var(--accent)');
+          app.ws.close();
+        } else {
+          app.macName = m.macName;
+          enterSession();
+        }
+        break;
+      case 'config': applyConfig(m); break;
+      case 'ping': send(Codec.pong(m.id, m.sentAt, now() / 1000)); break;
+      case 'pong': app.rtt = (now() / 1000 - m.sentAt) * 1000; updateStatus(); break;
+      case 'bye': if (m.reason) $('err').textContent = m.reason; break;
+      case 'video': onVideo(m); break;
+    }
+  }
+}
+
+function helloInfo() {
+  const v = (navigator.userAgent.match(/Version\/([\d.]+)/) || [])[1] || '';
+  return {
+    deviceID: app.deviceID,
+    deviceName: load('tabletName') || 'iPad (Safari)',
+    model: 'Web',
+    systemVersion: v ? `Safari ${v}` : 'Safari',
+    capabilities: app.caps,
+    width: window.innerWidth, height: window.innerHeight, scale: window.devicePixelRatio || 2,
+  };
+}
+
+let pingTimer = null;
+let wakeLock = null;
+
+function enterSession() {
+  app.inSession = true;
+  document.body.classList.add('session');
+  setState(`Collegato a ${app.macName}`, 'var(--web)');
+  measure();
+  clearInterval(pingTimer);
+  pingTimer = setInterval(() => { app.pingID = (app.pingID + 1) >>> 0; send(Codec.ping(app.pingID, now() / 1000)); }, 2000);
+  requestWake();
+  updateStatus();
+}
+
+function leaveSession() {
+  app.inSession = false;
+  document.body.classList.remove('session');
+  resetMirror();
+  clearInterval(pingTimer);
+  app.pen.down = false;
+  $('menu').classList.remove('open');
+  if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
+  if (!app.wantConnected) setState('Non collegato');
+}
+
+function disconnect() {
+  app.wantConnected = false;
+  send(Codec.bye('Sessione chiusa dall\'iPad'));
+  setTimeout(() => { try { app.ws && app.ws.close(); } catch (_) {} }, 50);
+  leaveSession();
+  setState('In pausa: premi Collega per riprendere');
+}
+
+async function requestWake() {
+  // Funziona solo in contesti sicuri (https): su http viene ignorato senza errori.
+  try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (_) {}
+}
+
+function enterFullscreen() {
+  const el = document.documentElement;
+  const fn = el.requestFullscreen || el.webkitRequestFullscreen;
+  if (fn) { try { const p = fn.call(el); if (p && p.catch) p.catch(() => {}); } catch (_) {} }
+}
+
+// ───────── configurazione dal Mac
+
+
+function applyConfig(c) {
+  app.config = c;
+  document.body.classList.toggle('lefty', c.leftHanded);
+  // Area attiva (modalità Schermo)
+  const area = $('area');
+  if (c.showRect && !(c.mirror && app.haveFrame)) {
+    Object.assign(area.style, { display: 'block', left: `${c.rect.x * 100}%`, top: `${c.rect.y * 100}%`,
+                                width: `${c.rect.w * 100}%`, height: `${c.rect.h * 100}%` });
+  } else area.style.display = 'none';
+  $('warn').style.display = c.canPost ? 'none' : 'block';
+  applyMirror(c);
+  document.body.classList.toggle('trackpad', c.mode === 3);
+  $('mDisplay').classList.toggle('on', c.mode === 4);
+  $('mTrackpad').classList.toggle('on', c.mode === 3);
+  $('mLock').classList.toggle('on', c.locked);
+  $('mPrec').classList.toggle('on', c.precision);
+  $('mEraser').classList.toggle('on', c.eraser);
+  updateStatus();
+}
+
+function updateStatus() {
+  const c = app.config;
+  $('stLink').textContent = `Safari · ${app.rtt > 0 ? app.rtt.toFixed(0) + ' ms' : '—'}`;
+  let p = c ? `${c.mode === 3 ? 'TRACKPAD' : 'DISPLAY'} · ${c.displayName}` : '';
+  if (c && c.locked) p += ' · 🔒︎';
+  if (c && c.precision) p += ' · ⌖';
+  if (c && c.eraser) p += ' · gomma';
+  $('stProfile').textContent = p;
+}
+
+// ───────── Modalità Display: schermo del Mac
+
+let decoding = false;
+let pendingFrame = null;
+/** Ultimo fotogramma decodificato e area del monitor che contiene: si ridisegna a ogni zoom/spostamento. */
+let lastFrame = null;
+
+/** Posizione del fotogramma (area f) dentro la vista che mostra l'area v, in frazioni della vista. */
+function placement(f, v) {
+  const vw = Math.max(v.w, 1e-6), vh = Math.max(v.h, 1e-6);
+  return { x: (f.x - v.x) / vw, y: (f.y - v.y) / vh, w: f.w / vw, h: f.h / vh };
+}
+
+function paintFrame() {
+  const c = app.config;
+  if (!lastFrame || !c) return;
+  const cv = $('screen');
+  const ctx = cv.getContext('2d');
+  if (!ctx) return;
+  const p = placement(lastFrame.region, c.mirrorRegion || FULL_RECT);
+  const W = cv.width, H = cv.height;
+  const exact = Math.abs(p.x) < 1e-4 && Math.abs(p.y) < 1e-4 && Math.abs(p.w - 1) < 1e-4 && Math.abs(p.h - 1) < 1e-4;
+  if (!exact) {
+    // Zoom o spostamento appena fatti: il fotogramma vecchio si adatta subito alla nuova area,
+    // finché arriva quello nuovo dal Mac.
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, W, H);
+  }
+  ctx.drawImage(lastFrame.img, p.x * W, p.y * H, p.w * W, p.h * H);
+}
+
+function applyMirror(c) {
+  document.body.classList.toggle('mirror', !!c.mirror);
+  const cv = $('screen');
+  Object.assign(cv.style, { left: `${c.rect.x * 100}%`, top: `${c.rect.y * 100}%`,
+                            width: `${c.rect.w * 100}%`, height: `${c.rect.h * 100}%` });
+  if (!c.mirror) resetMirror();
+  else paintFrame();
+  updateMirrorMessage();
+}
+
+function updateMirrorMessage() {
+  const c = app.config;
+  const msg = $('mirrorMsg');
+  const text = c && c.mirror && !app.haveFrame
+    ? (c.mirrorStatus || 'In attesa dello schermo del Mac…')
+    : (c && c.mirror && c.mirrorStatus ? c.mirrorStatus : '');
+  msg.textContent = text;
+  msg.classList.toggle('visible', text !== '');
+}
+
+function resetMirror() {
+  app.haveFrame = false;
+  pendingFrame = null;
+  if (lastFrame && lastFrame.img.close) lastFrame.img.close();
+  lastFrame = null;
+  const cv = $('screen');
+  cv.classList.remove('ready');
+  updateMirrorMessage();
+}
+
+/** Al massimo un fotogramma in decodifica e uno in attesa: i più vecchi si scartano (con conferma). */
+function onVideo(m) {
+  if (decoding) {
+    if (pendingFrame) send(Codec.frameAck(pendingFrame.id));
+    pendingFrame = m;
+    return;
+  }
+  decodeFrame(m);
+}
+
+function loadImage(blob) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+    img.onerror = e => { URL.revokeObjectURL(url); reject(e); };
+    img.src = url;
+  });
+}
+
+async function decodeFrame(m) {
+  decoding = true;
+  try {
+    const blob = new Blob([m.data], { type: 'image/jpeg' });
+    const img = typeof createImageBitmap === 'function' ? await createImageBitmap(blob) : await loadImage(blob);
+    drawFrame(img, m);
+  } catch (_) {
+    // fotogramma illeggibile: si passa al successivo
+  } finally {
+    send(Codec.frameAck(m.id));       // controllo di flusso: il Mac può inviare il prossimo
+    decoding = false;
+    if (pendingFrame) { const next = pendingFrame; pendingFrame = null; decodeFrame(next); }
+  }
+}
+
+function drawFrame(img, m) {
+  if (!app.config || !app.config.mirror) { if (img.close) img.close(); return; }
+  const cv = $('screen');
+  if (cv.width !== m.w) cv.width = m.w;
+  if (cv.height !== m.h) cv.height = m.h;
+  if (lastFrame && lastFrame.img !== img && lastFrame.img.close) lastFrame.img.close();
+  lastFrame = { img, region: m.region || FULL_RECT };
+  paintFrame();
+  if (!app.haveFrame) {
+    app.haveFrame = true;
+    cv.classList.add('ready');
+    $('area').style.display = 'none';
+    updateMirrorMessage();
+  }
+}
+
+// ───────── Apple Pencil
+
+function measure() {
+  const r = surface.getBoundingClientRect();
+  app.rect = { left: r.left, top: r.top, width: Math.max(r.width, 1), height: Math.max(r.height, 1) };
+}
+
+/** altitudine/azimut dai tiltX/tiltY (gradi) se il browser non fornisce gli angoli. */
+function anglesFromTilt(tx, ty) {
+  const a = Math.tan(tx * Math.PI / 180), b = Math.tan(ty * Math.PI / 180);
+  const m = Math.hypot(a, b);
+  if (m < 1e-6) return [Math.PI / 2, 0];
+  return [Math.atan(1 / m), Math.atan2(b, a)];
+}
+
+function sampleFrom(ev, flags) {
+  const r = app.rect;
+  const x = Math.min(Math.max((ev.clientX - r.left) / r.width, 0), 1);
+  const y = Math.min(Math.max((ev.clientY - r.top) / r.height, 0), 1);
+  let alt, az;
+  if (typeof ev.altitudeAngle === 'number' && typeof ev.azimuthAngle === 'number') {
+    alt = ev.altitudeAngle; az = ev.azimuthAngle;
+  } else {
+    [alt, az] = anglesFromTilt(ev.tiltX || 0, ev.tiltY || 0);
+  }
+  const contact = (flags & FLAG.contact) !== 0;
+  return { seq: 0, t: ev.timeStamp / 1000, x, y, p: contact ? (ev.pressure || 0) : 0,
+           alt, az, roll: 0, hover: 0, flags };
+}
+
+function capsChanged() {
+  send(Codec.deviceUpdate(app.caps, window.innerWidth, window.innerHeight));
+  renderCaps();
+}
+
+/** Rilevamento reale delle capacità (come CapabilityDetector.swift). */
+function observeContact(s) {
+  const pen = app.pen;
+  let changed = false;
+  if (!(app.caps & CAP.tilt)) { app.caps |= CAP.tilt; changed = true; }
+  if (s.flags & FLAG.began) { pen.sMin = 1; pen.sMax = 0; pen.sN = 0; }
+  if (s.flags & FLAG.contact) {
+    pen.sMin = Math.min(pen.sMin, s.p); pen.sMax = Math.max(pen.sMax, s.p); pen.sN++;
+    if (pen.sMax - pen.sMin > 0.05 && !(app.caps & CAP.pressure)) {
+      app.caps |= CAP.pressure; store('tabletPressure', '1'); changed = true;
+    }
+  }
+  if (s.flags & FLAG.ended) {
+    if (pen.sN > 30 && pen.sMax - pen.sMin < 0.005) {
+      if (++pen.flat >= 3 && (app.caps & CAP.pressure)) {
+        app.caps &= ~CAP.pressure; store('tabletPressure', '0'); changed = true;
+      }
+    } else if (pen.sN > 30) pen.flat = 0;
+  }
+  return changed;
+}
+
+function sendPenSamples(samples) {
+  let changed = false;
+  for (const s of samples) {
+    if (observeContact(s)) changed = true;
+    app.seq = (app.seq + 1) >>> 0; s.seq = app.seq;
+  }
+  send(Codec.penBatch(samples));    // prima l'invio, poi l'interfaccia
+  if (changed) capsChanged();
+  const last = samples[samples.length - 1];
+  moveDot(last.flags & FLAG.ended ? null : last);
+}
+
+function moveDot(s) {
+  const d = $('dot');
+  if (!app.showDot || !s) { d.style.display = 'none'; return; }
+  d.style.display = 'block';
+  d.style.left = `${s.x * 100}%`; d.style.top = `${s.y * 100}%`;
+}
+
+function coalesced(ev) {
+  if (typeof ev.getCoalescedEvents === 'function') {
+    try { const list = ev.getCoalescedEvents(); if (list && list.length) return list; } catch (_) {}
+  }
+  return [ev];
+}
+
+function penDown(ev) {
+  const pen = app.pen;
+  clearTimeout(pen.hoverTimer); pen.inHover = false;
+  pen.down = true; pen.id = ev.pointerId;
+  try { surface.setPointerCapture(ev.pointerId); } catch (_) {}
+  pen.activeUntil = now() + 600;
+  sendPenSamples([sampleFrom(ev, FLAG.contact | FLAG.began)]);
+}
+
+function penMove(ev) {
+  const pen = app.pen;
+  if (pen.down) {
+    pen.activeUntil = now() + 600;
+    if (ev.pointerId !== pen.id) return;
+    sendPenSamples(coalesced(ev).map(e => sampleFrom(e, FLAG.contact)));
+    return;
+  }
+  // Hover (iPad e Pencil compatibili): pointermove della penna senza contatto.
+  if (ev.buttons !== 0) return;
+  if (!(app.caps & CAP.hover)) {
+    // Serve una sequenza reale di eventi, non un singolo evento di compatibilità.
+    const t = now();
+    if (t - pen.hoverFirst > 400) { pen.hoverFirst = t; pen.hoverCount = 0; }
+    if (++pen.hoverCount >= 3) { app.caps |= CAP.hover; capsChanged(); }
+    else return;
+  }
+  pen.inHover = true;
+  clearTimeout(pen.hoverTimer);
+  pen.hoverTimer = setTimeout(penProximityOut, 600);
+  // Rete congestionata: l'hover si dirada, i tratti mai.
+  const buffered = app.ws ? app.ws.bufferedAmount : 0;
+  if (buffered > 64 * 1024) return;
+  if ((buffered > 16 * 1024 || app.rtt > 25) && now() - (pen.lastHover || 0) < 16) return;
+  pen.lastHover = now();
+  const s = sampleFrom(ev, FLAG.hovering);
+  app.seq = (app.seq + 1) >>> 0; s.seq = app.seq;
+  send(Codec.penBatch([s]));
+  moveDot(s);
+}
+
+function penUp(ev, cancelled) {
+  const pen = app.pen;
+  if (!pen.down || ev.pointerId !== pen.id) return;
+  pen.down = false; pen.id = null;
+  pen.activeUntil = now() + 600;
+  sendPenSamples([sampleFrom(ev, FLAG.ended | (cancelled ? FLAG.cancelled : 0))]);
+}
+
+function penProximityOut() {
+  const pen = app.pen;
+  if (pen.down || !pen.inHover) return;
+  pen.inHover = false;
+  app.seq = (app.seq + 1) >>> 0;
+  send(Codec.penBatch([{ seq: app.seq, t: now() / 1000, x: 0, y: 0, p: 0, alt: 0, az: 0, roll: 0, hover: 0, flags: FLAG.proxOut }]));
+  moveDot(null);
+}
+
+// ───────── Dita (solo modalità Touchpad)
+
+const touches = new Map();
+let gesture = null;
+let lastTap = { t: 0, x: 0, y: 0, p: null };
+
+/** Perché un dito viene ignorato ('' = accettato). */
+function touchRejection(ev) {
+  const c = app.config;
+  if (!c) return 'sessione non ancora configurata dal Mac';
+  if (c.mode !== 3 && c.mode !== 4) return 'modalità ' + c.mode + ' del Mac (serve Display = 4)';
+  if (c.palm) {
+    if (app.pen.down) return 'Pencil appoggiata sullo schermo';
+    if (now() < app.pen.activeUntil) return 'Pencil appena usata (0,6 s)';
+    // Solo un contatto molto ampio è un palmo: un polpastrello su iPad misura 40–80 px.
+    if ((ev.width || 0) > 140 || (ev.height || 0) > 140) return 'contatto troppo ampio (palmo)';
+  }
+  return '';
+}
+
+let fingerSent = 0;
+function fingerDiag(text) {
+  const el = $('fdiag');
+  if (el) el.textContent = text;
+}
+
+function touchAllowed(ev) {
+  const why = touchRejection(ev);
+  const size = `${Math.round(ev.width || 0)}×${Math.round(ev.height || 0)}`;
+  fingerDiag(why ? `Dito ignorato: ${why} · ${size}` : `Dito OK · ${size} · inviati ${fingerSent}`);
+  return why === '';
+}
+
+function g(kind, dx, dy, scale, fingers) {
+  fingerSent++;
+  send(Codec.gesture(kind, dx, dy, scale, fingers));
+}
+
+function centroid() {
+  let x = 0, y = 0;
+  for (const t of touches.values()) { x += t.x; y += t.y; }
+  return { x: x / touches.size, y: y / touches.size };
+}
+function spread() {
+  const [a, b] = Array.from(touches.values());
+  return a && b ? Math.hypot(a.x - b.x, a.y - b.y) : 0;
+}
+/** Distanza media delle dita dal centro (per il pizzico a quattro o più dita). */
+function spreadAll() {
+  const c = centroid();
+  let s = 0;
+  for (const t of touches.values()) s += Math.hypot(t.x - c.x, t.y - c.y);
+  return touches.size ? s / touches.size : 0;
+}
+
+/** Chiude il gesto in corso prima di passare a uno con più dita. */
+function closeGesture() {
+  if (!gesture) return;
+  clearTimeout(gesture.lp);
+  if (gesture.kind === 'one' && gesture.dragging) g(GK.dragEnd);
+  if (gesture.kind === 'two' && !gesture.ended) { gesture.ended = true; g(GK.gestureEnd, 0, 0, 1, 2); }
+  if (gesture.kind === 'multi' && !gesture.ended) { gesture.ended = true; g(GK.multiEnd, 0, 0, 1, gesture.fingers); }
+}
+
+function startMulti() {
+  closeGesture();
+  const n = Math.min(touches.size, 5);
+  gesture = { kind: 'multi', fingers: n, t0: now(), total: 0, c: centroid(), d: spreadAll(), ended: false };
+}
+
+/** Posizione normalizzata (0…1) sulla superficie. */
+function normPoint(x, y) {
+  if (!app.rect || !app.rect.width || !app.rect.height) measure();
+  const r = app.rect;
+  return { x: Math.min(Math.max((x - r.left) / r.width, 0), 1), y: Math.min(Math.max((y - r.top) / r.height, 0), 1) };
+}
+
+function displayMode() { return !!app.config && app.config.mode === 4; }
+
+function touchDown(ev) {
+  // Primo dito di un nuovo tocco: si scartano eventuali dita rimaste "appese" (pointerup perso).
+  if (ev.isPrimary && touches.size > 0) {
+    if (gesture && gesture.lp) clearTimeout(gesture.lp);
+    touches.clear();
+    gesture = null;
+  }
+  if (!touchAllowed(ev)) return;
+  touches.set(ev.pointerId, { x: ev.clientX, y: ev.clientY, sx: ev.clientX, sy: ev.clientY });
+  if (touches.size === 1 && displayMode()) {
+    // Come un trackpad: movimento relativo, tocco = clic, doppio tocco = doppio clic.
+    // Tenere premuto non trascina (per trascinare e disegnare c'è la Pencil).
+    gesture = { kind: 'one', display: true, t0: now(), moved: false, dragging: false, lp: null };
+  } else if (touches.size === 1) {
+    gesture = { kind: 'one', t0: now(), moved: false, dragging: false, lp: null };
+    gesture.lp = setTimeout(() => {
+      if (gesture && gesture.kind === 'one' && !gesture.moved) { gesture.dragging = true; g(GK.dragBegin); }
+    }, 350);
+  } else if (touches.size === 2) {
+    if (gesture) { clearTimeout(gesture.lp); if (gesture.dragging) g(GK.dragEnd); }
+    gesture = { kind: 'two', t0: now(), total: 0, c: centroid(), c0: centroid(), d: spread(), ended: false };
+  } else if (touches.size >= 3) {
+    // Tre o quattro dita (gesti di sistema). Un dito in più all'inizio del gesto lo "promuove".
+    if (!gesture || gesture.kind !== 'multi' || gesture.total < 20) startMulti();
+  }
+}
+
+function touchMove(ev) {
+  const t = touches.get(ev.pointerId);
+  if (!t || !gesture) return;
+  const dx = ev.clientX - t.x, dy = ev.clientY - t.y;
+  t.x = ev.clientX; t.y = ev.clientY;
+  if (gesture.kind === 'one' && touches.size === 1) {
+    if (!gesture.moved && Math.hypot(t.x - t.sx, t.y - t.sy) > 8) { gesture.moved = true; clearTimeout(gesture.lp); }
+    if (gesture.dragging) g(GK.dragMove, dx, dy);
+    else if (gesture.moved) g(GK.pointerMove, dx, dy);
+  } else if (gesture.kind === 'two' && touches.size === 2) {
+    const c = centroid(), d = spread();
+    const cdx = c.x - gesture.c.x, cdy = c.y - gesture.c.y;
+    gesture.total += Math.abs(cdx) + Math.abs(cdy);
+    if (Math.abs(cdx) + Math.abs(cdy) > 0.5) g(GK.scroll, cdx, cdy, 1, 2);
+    if (gesture.d > 0 && d > 0) {
+      const s = d / gesture.d;
+      // Soglia 2%: lo scorrimento a due dita non deve generare zoom involontari.
+      if (Math.abs(s - 1) > 0.02) {
+        const pc = normPoint(c.x, c.y);    // centro delle dita: in modalità Display è il punto fisso dello zoom
+        g(GK.pinch, pc.x, pc.y, s, 2); gesture.d = d; gesture.total += 3;
+      }
+    }
+    gesture.c = c;
+  } else if (gesture.kind === 'multi' && touches.size >= 3 && !gesture.ended) {
+    const c = centroid(), d = spreadAll();
+    const cdx = c.x - gesture.c.x, cdy = c.y - gesture.c.y;
+    gesture.total += Math.abs(cdx) + Math.abs(cdy);
+    if (Math.abs(cdx) + Math.abs(cdy) > 0.5) g(GK.multiMove, cdx, cdy, 1, gesture.fingers);
+    if (gesture.fingers >= 4 && gesture.d > 0 && d > 0) {
+      const s = d / gesture.d;
+      if (Math.abs(s - 1) > 0.02) { g(GK.multiPinch, 0, 0, s, gesture.fingers); gesture.d = d; gesture.total += 3; }
+    }
+    gesture.c = c;
+  }
+}
+
+function touchUp(ev) {
+  if (!touches.has(ev.pointerId)) return;
+  const t = touches.get(ev.pointerId);
+  touches.delete(ev.pointerId);
+  if (!gesture) return;
+  if (gesture.kind === 'one' && touches.size === 0) {
+    clearTimeout(gesture.lp);
+    if (gesture.dragging) g(GK.dragEnd);
+    else if (!gesture.moved && now() - gesture.t0 < 300) {
+      const tt = now();
+      const isDouble = tt - lastTap.t < 450 && Math.hypot(t.sx - lastTap.x, t.sy - lastTap.y) < 40;
+      if (gesture.display) {
+        // Modalità Display: il clic avviene nel punto toccato (il doppio clic nel punto del primo tocco).
+        const p = isDouble && lastTap.p ? lastTap.p : normPoint(t.sx, t.sy);
+        g(isDouble ? GK.doubleTapAt : GK.tapAt, p.x, p.y);
+      } else {
+        // Trackpad: la posizione del tocco serve per il clic secondario negli angoli.
+        const p = normPoint(t.sx, t.sy);
+        g(isDouble ? GK.doubleClick : GK.leftClick, isDouble ? 0 : p.x, isDouble ? 0 : p.y);
+      }
+      lastTap = isDouble ? { t: 0, x: 0, y: 0, p: null } : { t: tt, x: t.sx, y: t.sy, p: normPoint(t.sx, t.sy) };
+    }
+    gesture = null;
+  } else if (gesture.kind === 'two') {
+    if (!gesture.ended) {
+      gesture.ended = true;
+      if (gesture.total < 10 && now() - gesture.t0 < 300) {
+        if (displayMode()) {
+          const p = normPoint(gesture.c0.x, gesture.c0.y);    // clic destro tra le due dita
+          g(GK.rightTapAt, p.x, p.y, 1, 2);
+        } else {
+          g(GK.rightClick, 0, 0, 1, 2);
+        }
+      }
+      g(GK.gestureEnd, 0, 0, 1, 2);
+    }
+    if (touches.size === 0) gesture = null;
+  } else if (gesture.kind === 'multi') {
+    if (!gesture.ended) {
+      gesture.ended = true;
+      if (gesture.fingers === 3 && gesture.total < 15 && now() - gesture.t0 < 350) g(GK.threeFingerTap, 0, 0, 1, 3);
+      g(GK.multiEnd, 0, 0, 1, gesture.fingers);
+    }
+    if (touches.size === 0) gesture = null;
+  }
+}
+
+// ───────── eventi
+
+surface.addEventListener('pointerdown', ev => {
+  ev.preventDefault();
+  if (ev.pointerType === 'pen') penDown(ev);
+  else if (ev.pointerType === 'touch') touchDown(ev);
+}, { passive: false });
+
+surface.addEventListener('pointermove', ev => {
+  if (ev.pointerType === 'pen') penMove(ev);
+  else if (ev.pointerType === 'touch') touchMove(ev);
+}, { passive: true });
+
+surface.addEventListener('pointerup', ev => {
+  if (ev.pointerType === 'pen') penUp(ev, false);
+  else if (ev.pointerType === 'touch') touchUp(ev);
+});
+
+surface.addEventListener('pointercancel', ev => {
+  if (ev.pointerType === 'pen') penUp(ev, true);
+  else if (ev.pointerType === 'touch') touchUp(ev);
+});
+
+surface.addEventListener('pointerleave', ev => {
+  if (ev.pointerType === 'pen' && !app.pen.down) penProximityOut();
+});
+
+for (const type of ['touchstart', 'touchmove', 'gesturestart', 'gesturechange', 'contextmenu', 'dblclick']) {
+  surface.addEventListener(type, e => e.preventDefault(), { passive: false });
+}
+
+window.addEventListener('resize', () => {
+  measure();
+  if (app.inSession) send(Codec.deviceUpdate(app.caps, window.innerWidth, window.innerHeight));
+});
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && app.inSession) requestWake();
+});
+
+// Uscita: tocco = suggerimento, pressione prolungata = esci
+(() => {
+  const btn = $('exitBtn');
+  let timer = null;
+  btn.addEventListener('pointerdown', e => {
+    e.stopPropagation();
+    timer = setTimeout(() => { timer = null; disconnect(); }, 600);
+  });
+  const cancel = () => {
+    if (timer) {
+      clearTimeout(timer); timer = null;
+      const h = $('hint'); h.style.display = 'block'; setTimeout(() => h.style.display = 'none', 2000);
+    }
+  };
+  btn.addEventListener('pointerup', cancel);
+  btn.addEventListener('pointercancel', () => { clearTimeout(timer); timer = null; });
+})();
+
+$('menuBtn').addEventListener('click', e => { e.stopPropagation(); $('menu').classList.toggle('open'); });
+$('menu').addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  else if (b.dataset.mode) send(Codec.control(CMD.setMode, Number(b.dataset.mode)));
+  else if (b.dataset.cmd) send(Codec.control(Number(b.dataset.cmd)));
+  else if (b.id === 'mDot') { app.showDot = !app.showDot; store('tabletDot', app.showDot ? '1' : '0'); moveDot(null); }
+  else if (b.id === 'mDiag') {
+    const on = !document.body.classList.contains('fdiag');
+    document.body.classList.toggle('fdiag', on);
+    store('tabletFingerDiag', on ? '1' : '0');
+    fingerDiag(on ? 'Diagnostica dita attiva: tocca lo schermo con un dito' : '');
+  }
+  else if (b.id === 'mFull') enterFullscreen();
+  $('menu').classList.remove('open');
+});
+
+$('connectBtn').addEventListener('click', connect);
+$('code').addEventListener('keydown', e => { if (e.key === 'Enter') connect(); });
+
+function renderCaps() {
+  const list = [[CAP.pressure, 'Pressione'], [CAP.tilt, 'Inclinazione'], [CAP.hover, 'Hover']];
+  $('caps').innerHTML = '';
+  for (const [bit, name] of list) {
+    const s = document.createElement('span');
+    s.className = 'cap' + ((app.caps & bit) ? ' on' : '');
+    s.textContent = name;
+    $('caps').appendChild(s);
+  }
+  for (const name of ['Doppio tocco', 'Squeeze', 'Rotazione']) {
+    const s = document.createElement('span');
+    s.className = 'cap'; s.textContent = `${name}: non disponibile in Safari`;
+    $('caps').appendChild(s);
+  }
+}
+
+// Avvio: codice dal link (#code=123456, es. dal QR del Mac) o dalla memoria locale.
+(() => {
+  const m = location.hash.match(/code=(\d{6})/);
+  if (m) { app.code = m[1]; store('tabletCode', m[1]); history.replaceState(null, '', location.pathname); }
+  $('code').value = app.code;
+  renderCaps();
+  if (load('tabletFingerDiag') === '1') document.body.classList.add('fdiag');
+  if (load('tabletAutoConnect') === '1') {
+    store('tabletAutoConnect', '0');
+    if (/^\d{6}$/.test(app.code)) setTimeout(() => $('connectBtn').click(), 50);
+  }
+  if (location.protocol !== 'http:' && location.protocol !== 'https:') setState('Apri questa pagina dal Mac via http');
+})();
+</script>
+</body>
+</html>
